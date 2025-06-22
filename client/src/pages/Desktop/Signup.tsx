@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 
-export default function DesktopHome() {
+export default function Signup() {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/Login");
+  const handleDashboard = () => {
+    navigate("/Dashboard");
   };
 
   return (
@@ -15,10 +15,10 @@ export default function DesktopHome() {
           className="w-24 h-24 mb-6"
         />
         <h1 className="text-3xl font-bold text-gray-800 text-center font-(family-name:--font-IBMPlexSans)">
-          Landing Page Coming Soon
+          Sign up Page Coming Soon
         </h1>
-        <button onClick={() => handleLogin()} className="mt-5 bg-amber-300 rounded-2xl px-4 py-1 cursor-pointer transition-colors hover:bg-amber-500">
-          View Login Portal
+        <button onClick={() => handleDashboard()} className="mt-5 bg-amber-300 rounded-2xl px-4 py-1 cursor-pointer transition-colors hover:bg-amber-500">
+          View Dashboard
         </button>
       </div>
     </div>

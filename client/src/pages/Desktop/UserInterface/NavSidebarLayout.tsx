@@ -48,7 +48,7 @@ export default function NavSidebarLayout({ page }: Props) {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#EED2D2] flex flex-col">
+    <div className="h-screen w-full bg-[#EED2D2] flex flex-col overflow-hidden">
       <header className="bg-[#F9F1F1] mx-2 mt-2 px-3 py-2 rounded-t-lg shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -70,7 +70,7 @@ export default function NavSidebarLayout({ page }: Props) {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => handleLogout()}
-              className="font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#D44E4E] hover:bg-red-700 text-white px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
+              className="font-bold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#D44E4E] hover:bg-red-700 text-white px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
             >
               <span>Logout</span>
               <img
@@ -122,7 +122,7 @@ export default function NavSidebarLayout({ page }: Props) {
                   alt="Overview"
                   className="w-6 h-6"
                 />
-                <span className="text-[#605D5D] font-semibold text-sm">
+                <span className="text-[#605D5D] font-semibold font-(family-name:--font-IBMPlexSans) text-sm">
                   Overview
                 </span>
               </div>
@@ -136,7 +136,7 @@ export default function NavSidebarLayout({ page }: Props) {
             </button>
 
             <div className="mt-2">
-              <h3 className="text-[#3F3131] font-semibold text-xs mb-1.5">
+              <h3 className="text-[#5C3333] font-bold text-xs mb-1.5">
                 Study Tools
               </h3>
 
@@ -152,7 +152,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Tasks"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Tasks
                   </span>
                 </div>
@@ -173,11 +173,11 @@ export default function NavSidebarLayout({ page }: Props) {
               >
                 <div className="flex items-center space-x-2">
                   <img
-                    src="/icons/sidebar/tabler--pig-money.svg"
+                    src="/icons/sidebar/solar--calendar-line-duotone.svg"
                     alt="Calendar"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Calendar
                   </span>
                 </div>
@@ -192,7 +192,7 @@ export default function NavSidebarLayout({ page }: Props) {
             </div>
             
             <div className="mt-2">
-              <h3 className="text-[#3F3131] font-semibold text-xs mb-1.5">
+              <h3 className="text-[#5C3333] font-bold text-xs mb-1.5">
                 Budget Tools
               </h3>
 
@@ -208,7 +208,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Assets"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Assets
                   </span>
                 </div>
@@ -233,7 +233,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Transactions"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Transactions
                   </span>
                 </div>
@@ -258,7 +258,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Deposits"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Deposits
                   </span>
                 </div>
@@ -273,7 +273,7 @@ export default function NavSidebarLayout({ page }: Props) {
             </div>
 
             <div className="mt-2">
-              <h3 className="text-[#3F3131] font-semibold text-xs mb-1.5">
+              <h3 className="text-[#5C3333] font-bold text-xs mb-1.5">
                 Account Management
               </h3>
 
@@ -289,7 +289,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Security"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Security
                   </span>
                 </div>
@@ -314,7 +314,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     alt="Settings"
                     className="w-6 h-6"
                   />
-                  <span className="text-[#605D5D] font-medium text-sm">
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
                     Settings
                   </span>
                 </div>

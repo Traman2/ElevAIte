@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import MobileHome from "./pages/Mobile/MobileHome";
 import DesktopHome from "./pages/Desktop/DesktopHome";
 import NavSidebarLayout from "./pages/Desktop/UserInterface/NavSidebarLayout";
+import Login from "./pages/Desktop/Login";
+import Signup from "./pages/Desktop/Signup";
 
 export default function App() {
   const [isMobile, setIsMobile] = useState(false);
@@ -29,6 +31,8 @@ export default function App() {
           <Router>
             <Routes>
               <Route path="" element={<DesktopHome />} />
+              <Route path="Login" element={<Login />} />
+              <Route path="Signup" element={<Signup />} />
               <Route path="Dashboard" element={<NavSidebarLayout page="Dashboard" />} />
               <Route path="Assets" element={<NavSidebarLayout page="Assets" />} />
               <Route path="Transactions" element={<NavSidebarLayout page="Transactions" />} />
