@@ -5,6 +5,9 @@ export default function DesktopHome() {
   const handleLogin = () => {
     navigate("/Login");
   };
+  const handleSignup = () => {
+    navigate("/Signup");
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#EED2D2] flex flex-col items-center justify-center">
@@ -17,9 +20,14 @@ export default function DesktopHome() {
         <h1 className="text-3xl font-bold text-gray-800 text-center font-(family-name:--font-IBMPlexSans)">
           Landing Page Coming Soon
         </h1>
-        <button onClick={() => handleLogin()} className="mt-5 bg-amber-300 rounded-2xl px-4 py-1 cursor-pointer transition-colors hover:bg-amber-500">
-          View Login Portal
-        </button>
+        <div className="flex justify-center gap-4 mt-5">
+          <button onClick={() => handleLogin()} className="bg-amber-300 rounded-2xl px-4 py-1 cursor-pointer transition-colors hover:bg-amber-500">
+            View Login Portal
+          </button>
+          <button onClick={() => handleSignup()} className="bg-amber-300 rounded-2xl px-4 py-1 cursor-pointer transition-colors hover:bg-amber-500">
+            View Signup Portal
+          </button>
+        </div>
       </div>
     </div>
   );

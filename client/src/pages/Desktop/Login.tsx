@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -12,8 +14,14 @@ type LoginSchema = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
+  const [invalidPass, setInvalidPass] = useState(false);
+
   const handleDashboard = () => {
     navigate("/Dashboard");
+  };
+
+  const handleHome = () => {
+    navigate("/");
   };
 
   const {
@@ -24,9 +32,22 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginSchema) => {
-    console.log(data);
-    handleDashboard();
+  const onSubmit = async (data: LoginSchema) => {
+    await axios
+      .post("http://localhost:3000/auth", data)
+      .then((response) => {
+        const token = response.data;
+        if (token) {
+          localStorage.setItem("token", token);
+          handleDashboard();
+        } else {
+          console.error("No token received from server");
+        }
+      })
+      .catch((error) => {
+        console.error("Login error: ", error.message);
+        setInvalidPass(true);
+      });
   };
 
   return (
@@ -43,8 +64,7 @@ export default function Login() {
             />
           </div>
           <h1
-            className="ml-6 text-[60px] font-semibold text-[#0c4626] mb-6 leading-none"
-            style={{ fontFamily: "IBM Plex Mono" }}
+            className="ml-6 text-[60px] font-semibold text-[#0c4626] mb-6 leading-none font-(family-name:--font-IBMPlexMono)"
           >
             Welcome
             <br />
@@ -52,8 +72,7 @@ export default function Login() {
           </h1>
           <div className="ml-6 max-w-140">
             <p
-              className="text-2xl font-semibold text-black"
-              style={{ fontFamily: "IBM Plex Sans" }}
+              className="text-2xl font-semibold text-black font-(family-name:--font-IBMPlexSans)"
             >
               Login to Schedgy & manage everything college throws at you.
             </p>
@@ -62,11 +81,21 @@ export default function Login() {
       </div>
 
       <div className="flex-2 bg-[#f7eaea] flex flex-col items-center justify-center ">
-        <div className="w-full max-w-sm bg-[#F4D5D5]/[0.64] p-8 rounded-lg shadow-md">
-          <h2 className="text-left font-(family-name:--font-IBMPlexMono) font-extrabold text-3xl text-[#5C543C] mb-8">
+        <div className="w-full max-w-sm bg-[#F4D5D5] p-8 rounded-lg shadow-md">
+          <h2
+            onClick={() => handleHome()}
+            className="cursor-pointer text-left font-(family-name:--font-IBMPlexMono) font-extrabold text-3xl text-[#5C543C] mb-2"
+          >
             Schedgy
           </h2>
-          <p className="text-sm font-(family-name:--font-IBMPlexSans) text-[#5C543C] mb-4">
+          {invalidPass && (
+              <div
+                className="transition-all font-(family-name:--font-IBMPlexSans) duration-300 ease-in-out bg-red-200 border border-red-400 text-red-600 font-bold rounded-lg shadow-md px-4 py-3 mb-6 flex items-center justify-center animate-fade-in min-h-12"
+              >
+                Invalid email or password
+              </div>
+            )}
+          <p className="text-sm font-(family-name:--font-IBMPlexSans) text-[#5C543C] mb-7">
             Please enter your details
           </p>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

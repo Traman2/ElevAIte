@@ -8,26 +8,78 @@ import Tasks from "./Tasks";
 import Calendar from "./Calendar";
 import Security from "./Security";
 import Settings from "./Settings";
+import axios from "axios";
 
 interface Props {
   page: string;
 }
 
+interface UserData {
+  _id: number;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
 export default function NavSidebarLayout({ page }: Props) {
   const [activePage, setActivePage] = useState(page);
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [totalAssets, setTotalAssets] = useState<number>(0);
+
   useEffect(() => {
     setActivePage(page);
   }, [page]);
 
   const navigate = useNavigate();
   const handleLogout = () => {
+    localStorage.removeItem("token");
     navigate("/");
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    axios
+      .get("http://localhost:3000/user/me", {
+        headers: {
+          "x-auth-token": token,
+        },
+      })
+      .then((response) => {
+        setUserData(response.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching user data:", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!userData) return;
+    axios
+      .get(`http://localhost:3000/bankaccount/${userData._id}`)
+      .then((response) => {
+        const total = response.data
+          ?.filter((account: any) => account.accountType === "Account" || account.accountType === "Debit")
+          .reduce((sum: number, account: any) => sum + (account.balance || 0), 0) || 0;
+        setTotalAssets(total);
+      })
+      .catch((err) => {
+        setTotalAssets(0);
+        console.error("Error fetching bank accounts:", err);
+      });
+  }, [userData]);
+
+  const formatCurrency = (amount: number): string => {
+    return amount.toLocaleString("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
   };
 
   function renderPage() {
     switch (activePage) {
       case "Dashboard":
-        return <Dashboard />;
+        return <Dashboard userData={userData} />;
       case "Assets":
         return <Assets />;
       case "Transactions":
@@ -43,7 +95,7 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Settings":
         return <Settings />;
       default:
-        return <Dashboard />;
+        return <Dashboard userData={userData} />;
     }
   }
 
@@ -62,8 +114,11 @@ export default function NavSidebarLayout({ page }: Props) {
                 Schedgy
               </span>
             </div>
-            <span className="text-lg font-bold text-[#3B3636]" style={{ fontFamily: 'var(--font-IBMPlexSans)' }}>
-              Good Morning, Tejas
+            <span
+              className="text-lg font-bold text-[#3B3636]"
+              style={{ fontFamily: "var(--font-IBMPlexSans)" }}
+            >
+              Good Morning, {userData?.firstName}
             </span>
           </div>
 
@@ -103,7 +158,7 @@ export default function NavSidebarLayout({ page }: Props) {
               Total Assets
             </p>
             <p className="text-[#3F3131] text-xl font-semibold font-(family-name:--font-IBMPlexSans)">
-              $12,543.23
+              {formatCurrency(totalAssets)}
             </p>
           </div>
 
@@ -190,7 +245,7 @@ export default function NavSidebarLayout({ page }: Props) {
                 )}
               </button>
             </div>
-            
+
             <div className="mt-2">
               <h3 className="text-[#5C3333] font-bold text-xs mb-1.5">
                 Budget Tools
@@ -342,10 +397,10 @@ export default function NavSidebarLayout({ page }: Props) {
                     className="text-[#291D1D] font-semibold text-sm"
                     style={{ fontFamily: "var(--font-IBMPlexSans)" }}
                   >
-                    Tejas Raman
+                    {userData?.firstName} {userData?.lastName}
                   </span>
                   <span className="text-[#291D1D] text-xs opacity-80">
-                    tejassraman@gmail.com
+                    {userData?.email}
                   </span>
                 </div>
               </div>
