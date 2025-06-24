@@ -34,7 +34,7 @@ export default function App() {
               <Route path="Login" element={<Login />} />
               <Route path="Signup" element={<Signup />} />
               <Route path="Dashboard" element={<NavSidebarLayout page="Dashboard" />} />
-              <Route path="Assets" element={<NavSidebarLayout page="Assets" />} />
+              <Route path="Accounts" element={<NavSidebarLayout page="Accounts" />} />
               <Route path="Transactions" element={<NavSidebarLayout page="Transactions" />} />
               <Route path="Deposits" element={<NavSidebarLayout page="Deposits" />} />
               <Route path="Tasks" element={<NavSidebarLayout page="Tasks" />} />

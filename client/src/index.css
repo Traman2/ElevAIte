@@ -7,3 +7,9 @@
   --font-IBMPlexSansThai: "IBM Plex Sans Thai", sans-serif;
   --font-IBMPlexSans: "IBM Plex Sans", sans-serif;
 }
+
+.no-spinner::-webkit-outer-spin-button,
+.no-spinner::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

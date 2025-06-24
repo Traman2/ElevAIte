@@ -16,7 +16,7 @@ const createAccount = async (req, res) => {
       balance,
     });
 
-    if (balance > 0 && (accountType === "Account" || accountType === "Debit")) {
+    if (balance > 0 && (accountType === "Savings" || accountType === "Debit")) {
       newAccount.incoming = balance;
     }
 

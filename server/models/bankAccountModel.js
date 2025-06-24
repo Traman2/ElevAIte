@@ -20,7 +20,7 @@ const accountSchema = new mongoose.Schema({
     accountType: {
         type: String,
         required: true,
-        enum: ["Account", "Debit", "Credit"],
+        enum: ["Savings", "Debit", "Credit"],
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

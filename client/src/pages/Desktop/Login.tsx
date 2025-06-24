@@ -107,7 +107,7 @@ export default function Login() {
                   type="email"
                   placeholder="Enter your email"
                   {...register("email")}
-                  className="block font-(family-name:--font-IBMPlexSans) w-full px-4 py-3 bg-[#D9D9D9] border border-transparent rounded-md"
+                  className="block font-(family-name:--font-IBMPlexSans) w-full px-4 py-3 bg-[#f1eaea] border border-transparent rounded-md"
                 />
               </div>
               {errors.email && (
@@ -130,7 +130,7 @@ export default function Login() {
                   type="password"
                   placeholder="Enter your password"
                   {...register("password")}
-                  className="block font-(family-name:--font-IBMPlexSans) w-full px-4 py-3 bg-[#D9D9D9] border border-transparent rounded-md"
+                  className="block font-(family-name:--font-IBMPlexSans) w-full px-4 py-3 bg-[#f1eaea] border border-transparent rounded-md"
                 />
               </div>
               {errors.password && (

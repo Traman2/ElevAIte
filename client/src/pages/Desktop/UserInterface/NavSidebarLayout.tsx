@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Dashboard from "./Dashboard";
-import Assets from "./Assets";
+import Accounts from "./Accounts";
 import Transactions from "./Transactions";
 import Deposits from "./Deposits";
 import { useNavigate } from "react-router-dom";
@@ -9,13 +9,15 @@ import Calendar from "./Calendar";
 import Security from "./Security";
 import Settings from "./Settings";
 import axios from "axios";
+import AssetModal from "../../../components/DesktopModals/AssetModal";
+import TransactionModal from "../../../components/DesktopModals/TransactionModal";
 
 interface Props {
   page: string;
 }
 
 interface UserData {
-  _id: number;
+  _id: string;
   userName: string;
   firstName: string;
   lastName: string;
@@ -26,6 +28,15 @@ export default function NavSidebarLayout({ page }: Props) {
   const [activePage, setActivePage] = useState(page);
   const [userData, setUserData] = useState<UserData | null>(null);
   const [totalAssets, setTotalAssets] = useState<number>(0);
+  const [modalState, setModalState] = useState<{
+    isOpen: boolean;
+    type: string;
+    title: string;
+  }>({
+    isOpen: false,
+    type: "",
+    title: "",
+  });
 
   useEffect(() => {
     setActivePage(page);
@@ -35,6 +46,34 @@ export default function NavSidebarLayout({ page }: Props) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
+  };
+
+  const handleAssets = () => {
+    navigate("/Accounts");
+  };
+
+  const handleAddAsset = () => {
+    setModalState({
+      isOpen: true,
+      type: "addAsset",
+      title: "Create New Asset",
+    });
+  };
+
+  const handleAddTransaction = () => {
+    setModalState({
+      isOpen: true,
+      type: "addTransaction",
+      title: "Add Transaction",
+    });
+  };
+
+  const handleCloseModal = () => {
+    setModalState({
+      isOpen: false,
+      type: "",
+      title: "",
+    });
   };
 
   useEffect(() => {
@@ -49,24 +88,37 @@ export default function NavSidebarLayout({ page }: Props) {
         setUserData(response.data);
       })
       .catch((err) => {
+        navigate("/Login");
         console.error("Error fetching user data:", err);
       });
   }, []);
 
-  useEffect(() => {
+  const fetchTotalAssets = () => {
     if (!userData) return;
     axios
       .get(`http://localhost:3000/bankaccount/${userData._id}`)
       .then((response) => {
-        const total = response.data
-          ?.filter((account: any) => account.accountType === "Account" || account.accountType === "Debit")
-          .reduce((sum: number, account: any) => sum + (account.balance || 0), 0) || 0;
+        const total =
+          response.data
+            ?.filter(
+              (account: any) =>
+                account.accountType === "Savings" ||
+                account.accountType === "Debit"
+            )
+            .reduce(
+              (sum: number, account: any) => sum + (account.balance || 0),
+              0
+            ) || 0;
         setTotalAssets(total);
       })
       .catch((err) => {
         setTotalAssets(0);
         console.error("Error fetching bank accounts:", err);
       });
+  };
+
+  useEffect(() => {
+    fetchTotalAssets();
   }, [userData]);
 
   const formatCurrency = (amount: number): string => {
@@ -80,10 +132,10 @@ export default function NavSidebarLayout({ page }: Props) {
     switch (activePage) {
       case "Dashboard":
         return <Dashboard userData={userData} />;
-      case "Assets":
-        return <Assets />;
+      case "Accounts":
+        return <Accounts onAddAsset={handleAddAsset} />;
       case "Transactions":
-        return <Transactions />;
+        return <Transactions onAddTransaction={handleAddTransaction} />;
       case "Deposits":
         return <Deposits />;
       case "Tasks":
@@ -98,6 +150,17 @@ export default function NavSidebarLayout({ page }: Props) {
         return <Dashboard userData={userData} />;
     }
   }
+
+  function renderModalContent() {
+    switch (modalState.type) {
+      case "addAsset":
+        return <AssetModal onClose={handleCloseModal} userId={userData?._id} onAssetAdded={fetchTotalAssets} />;
+      case "addTransaction":
+        return <TransactionModal onClose={handleCloseModal} userId={userData?._id}/>;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="h-screen w-full bg-[#EED2D2] flex flex-col overflow-hidden">
@@ -153,7 +216,10 @@ export default function NavSidebarLayout({ page }: Props) {
 
       <div className="flex mx-2 mt-1 mb-2 gap-1 flex-1 min-h-0">
         <div className="bg-[#F9F1F1] w-60 px-3 py-2 rounded-bl-lg shadow-sm flex flex-col">
-          <div className="border border-[#9C8383] bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3">
+          <div
+            onClick={() => handleAssets()}
+            className="cursor-pointer shadow-sm bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3"
+          >
             <p className="text-[#3F3131] text-xs font-medium font-(family-name:--font-IBMPlexSans)">
               Total Assets
             </p>
@@ -162,13 +228,11 @@ export default function NavSidebarLayout({ page }: Props) {
             </p>
           </div>
 
-          {/* Navigation Tabs */}
           <div className="mt-4 flex-1">
-            {/* Overview */}
             <button
               onClick={() => navigate("/Dashboard")}
               className={`${
-                activePage === "Dashboard" && "bg-[#FADEDE]"
+                activePage === "Dashboard" && "bg-[#FADEDE] shadow-sm"
               } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors`}
             >
               <div className="flex items-center space-x-2">
@@ -198,7 +262,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Tasks")}
                 className={`${
-                  activePage === "Tasks" && "bg-[#FADEDE]"
+                  activePage === "Tasks" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -223,7 +287,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Calendar")}
                 className={`${
-                  activePage === "Calendar" && "bg-[#FADEDE]"
+                  activePage === "Calendar" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -252,9 +316,9 @@ export default function NavSidebarLayout({ page }: Props) {
               </h3>
 
               <button
-                onClick={() => navigate("/Assets")}
+                onClick={() => navigate("/Accounts")}
                 className={`${
-                  activePage === "Assets" && "bg-[#FADEDE]"
+                  activePage === "Accounts" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors`}
               >
                 <div className="flex items-center space-x-2">
@@ -264,10 +328,10 @@ export default function NavSidebarLayout({ page }: Props) {
                     className="w-6 h-6"
                   />
                   <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
-                    Assets
+                    Accounts
                   </span>
                 </div>
-                {activePage === "Assets" && (
+                {activePage === "Accounts" && (
                   <img
                     src="/icons/sidebar/ic--sharp-arrow-right.svg"
                     alt="Active"
@@ -279,7 +343,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Transactions")}
                 className={`${
-                  activePage === "Transactions" && "bg-[#FADEDE]"
+                  activePage === "Transactions" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -304,7 +368,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Deposits")}
                 className={`${
-                  activePage === "Deposits" && "bg-[#FADEDE]"
+                  activePage === "Deposits" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -335,7 +399,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Security")}
                 className={`${
-                  activePage === "Security" && "bg-[#FADEDE]"
+                  activePage === "Security" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors`}
               >
                 <div className="flex items-center space-x-2">
@@ -360,7 +424,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/Settings")}
                 className={`${
-                  activePage === "Settings" && "bg-[#FADEDE]"
+                  activePage === "Settings" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -412,6 +476,17 @@ export default function NavSidebarLayout({ page }: Props) {
           {renderPage()}
         </div>
       </div>
+
+      {modalState.isOpen && (
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
+          onClick={handleCloseModal}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            {renderModalContent()}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
