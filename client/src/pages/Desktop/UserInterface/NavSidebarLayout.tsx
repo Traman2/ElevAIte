@@ -1,14 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
+
+//Tabs
 import Dashboard from "./Dashboard";
 import Accounts from "./Accounts";
 import Transactions from "./Transactions";
 import Deposits from "./Deposits";
-import { useNavigate } from "react-router-dom";
 import Tasks from "./Tasks";
 import Calendar from "./Calendar";
 import Security from "./Security";
 import Settings from "./Settings";
-import axios from "axios";
+
+//Modals
 import AssetModal from "../../../components/DesktopModals/AssetModal";
 import TransactionModal from "../../../components/DesktopModals/TransactionModal";
 
@@ -37,6 +41,8 @@ export default function NavSidebarLayout({ page }: Props) {
     type: "",
     title: "",
   });
+  const [showModal, setShowModal] = useState(false);
+  const [animateOut, setAnimateOut] = useState(false);
 
   useEffect(() => {
     setActivePage(page);
@@ -52,6 +58,7 @@ export default function NavSidebarLayout({ page }: Props) {
     navigate("/Accounts");
   };
 
+  //Modal Handlers
   const handleAddAsset = () => {
     setModalState({
       isOpen: true,
@@ -76,6 +83,7 @@ export default function NavSidebarLayout({ page }: Props) {
     });
   };
 
+  //Decrypt user data from jwt
   useEffect(() => {
     const token = localStorage.getItem("token");
     axios
@@ -93,6 +101,7 @@ export default function NavSidebarLayout({ page }: Props) {
       });
   }, []);
 
+  //Total Asset Calculation
   const fetchTotalAssets = () => {
     if (!userData) return;
     axios
@@ -128,6 +137,7 @@ export default function NavSidebarLayout({ page }: Props) {
     });
   };
 
+  //React App Router Tab Render
   function renderPage() {
     switch (activePage) {
       case "Dashboard":
@@ -151,6 +161,7 @@ export default function NavSidebarLayout({ page }: Props) {
     }
   }
 
+  //Set Modal Type
   function renderModalContent() {
     switch (modalState.type) {
       case "addAsset":
@@ -162,8 +173,20 @@ export default function NavSidebarLayout({ page }: Props) {
     }
   };
 
+  useEffect(() => {
+    if (modalState.isOpen) {
+      setShowModal(true);
+      setAnimateOut(false);
+    } else if (showModal) {
+      setAnimateOut(true);
+      const timeout = setTimeout(() => setShowModal(false), 200);
+      return () => clearTimeout(timeout);
+    }
+  }, [modalState.isOpen]);
+
   return (
     <div className="h-screen w-full bg-[#EED2D2] flex flex-col overflow-hidden">
+      {/* Header Nav Bar */}
       <header className="bg-[#F9F1F1] mx-2 mt-2 px-3 py-2 rounded-t-lg shadow-sm">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -214,6 +237,7 @@ export default function NavSidebarLayout({ page }: Props) {
         </div>
       </header>
 
+      {/* Sidebar */}
       <div className="flex mx-2 mt-1 mb-2 gap-1 flex-1 min-h-0">
         <div className="bg-[#F9F1F1] w-60 px-3 py-2 rounded-bl-lg shadow-sm flex flex-col">
           <div
@@ -471,21 +495,34 @@ export default function NavSidebarLayout({ page }: Props) {
             </div>
           </div>
         </div>
-
+        
+        {/* Render Section */}
         <div className="bg-[#F9F1F1] flex-1 px-4 py-3 rounded-br-lg shadow-sm">
           {renderPage()}
         </div>
       </div>
 
-      {modalState.isOpen && (
-        <div
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50"
-          onClick={handleCloseModal}
-        >
-          <div onClick={(e) => e.stopPropagation()}>
-            {renderModalContent()}
+
+      {/* Render Modal */}
+      {showModal && (
+        <>
+          <div
+            className={`fixed inset-0 z-50 ${animateOut ? "overlay-animate-out" : "overlay-animate-in"} bg-black`}
+            onClick={() => {
+              if (!animateOut) setModalState({ isOpen: false, type: "", title: "" });
+            }}
+          />
+          <div
+            className={`fixed inset-0 flex items-center justify-center z-60 pointer-events-none`}
+          >
+            <div
+              onClick={e => e.stopPropagation()}
+              className={animateOut ? "modal-animate-out pointer-events-auto" : "modal-animate-in pointer-events-auto"}
+            >
+              {renderModalContent()}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );

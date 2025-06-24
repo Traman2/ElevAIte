@@ -10,7 +10,7 @@ export default function DesktopHome() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#EED2D2] flex flex-col items-center justify-center">
+    <div className="min-h-screen w-full bg-[#EED2D2] flex flex-col items-center justify-center overflow-x-hidden">
       <div className="bg-[#F9F1F1] p-12 rounded-lg shadow-md flex flex-col items-center">
         <img
           src="/icons/noto--money-bag.svg"
