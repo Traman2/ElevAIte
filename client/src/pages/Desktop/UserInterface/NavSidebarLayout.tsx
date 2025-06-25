@@ -15,6 +15,7 @@ import Settings from "./Settings";
 //Modals
 import AssetModal from "../../../components/DesktopModals/AssetModal";
 import TransactionModal from "../../../components/DesktopModals/TransactionModal";
+import SearchModal from "../../../components/DesktopModals/SearchModal";
 
 interface Props {
   page: string;
@@ -72,6 +73,14 @@ export default function NavSidebarLayout({ page }: Props) {
       isOpen: true,
       type: "addTransaction",
       title: "Add Transaction",
+    });
+  };
+
+  const handleSearch = () => {
+    setModalState({
+      isOpen: true,
+      type: "search",
+      title: "Search",
     });
   };
 
@@ -168,6 +177,8 @@ export default function NavSidebarLayout({ page }: Props) {
         return <AssetModal onClose={handleCloseModal} userId={userData?._id} onAssetAdded={fetchTotalAssets} />;
       case "addTransaction":
         return <TransactionModal onClose={handleCloseModal} userId={userData?._id}/>;
+      case "search":
+        return <SearchModal/>
       default:
         return null;
     }
@@ -210,6 +221,17 @@ export default function NavSidebarLayout({ page }: Props) {
 
           <div className="flex items-center space-x-3">
             <button
+              onClick={() => handleSearch()}
+              className="font-semibold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#EAE3E3] hover:bg-gray-300 text-[#5C543C] px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
+            >
+              <span>Search</span>
+              <img
+                src="/icons/material-symbols--search-rounded.svg"
+                alt="Search"
+                className="w-4 h-4 ml-2"
+              />
+            </button>
+            <button
               onClick={() => handleLogout()}
               className="font-bold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#D44E4E] hover:bg-red-700 text-white px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
             >
@@ -220,19 +242,6 @@ export default function NavSidebarLayout({ page }: Props) {
                 className="w-4 h-4"
               />
             </button>
-
-            <div className="flex items-center bg-[#EAE3E3] border border-gray-300 rounded-3xl focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
-              <img
-                src="/icons/material-symbols--search-rounded.svg"
-                alt="Search"
-                className="w-4 h-4 text-gray-400 ml-2"
-              />
-              <input
-                type="text"
-                placeholder="Search"
-                className="pl-2 pr-3 py-1.5 bg-transparent focus:outline-none font-(family-name:--font-IBMPlexSans) text-sm"
-              />
-            </div>
           </div>
         </div>
       </header>
