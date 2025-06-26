@@ -2,12 +2,12 @@
  <img src="spongebob-stress-image.gif" style="width: 500px; height: auto;">
 </p>
 
-<table align="center">
+<table align="center" border="0" cellspacing="0" cellpadding="0" style="border: none;">
   <tr>
-    <td>
+    <td style="border: none;">
       <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40">
     </td>
-    <td style="vertical-align: top; padding-left: 10px;">
+    <td style="vertical-align: top; padding-left: 10px; border: none;">
       <h1 style="margin: 0; padding: 0;">Schedgy</h1>
     </td>
   </tr>
