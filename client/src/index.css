@@ -81,3 +81,37 @@ html {
     scrollbar-color: #ffffff #d3baba;
   }
 }
+
+.light-cream-box {
+  background: #e7eaf1;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.light-pink-box {
+  background: #FADEDE;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.light-yellow-box {
+  background: #FFF8E1;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.light-blue-box {
+  background: #E3F0FF;
+  border-radius: 1.25rem;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
