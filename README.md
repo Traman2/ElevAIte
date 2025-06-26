@@ -3,10 +3,8 @@
 </p>
 
 <h1 align="center">
-  <span style="display: inline-flex; align-items: center; gap: 12px;">
-    <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40" style="vertical-align: middle; margin-top: 12px;"/>
-    <span style="font-size: 2.5rem; font-weight: bold; vertical-align: middle;">Schedgy</span>
-  </span>
+  <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40">
+  <strong style="font-size:2.5rem;">Schedgy</strong>
 </h1>
 
 <p align="center">
