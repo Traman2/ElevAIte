@@ -2,12 +2,12 @@
  <img src="spongebob-stress-image.gif" style="width: 500px; height: auto;">
 </p>
 
-<p align="center">
+<h1 align="center">
   <span style="display: inline-flex; align-items: center; gap: 12px;">
     <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40" style="vertical-align: middle;"/>
     <span style="font-size: 2.5rem; font-weight: bold; vertical-align: middle;">Schedgy</span>
   </span>
-</p>
+</h1>
 
 ---
 
