@@ -81,7 +81,7 @@ export default function DesktopHome() {
             className="w-7 h-7"
           />
           <span className="text-lg font-bold tracking-tight font-(family-name:--font-IBMPlexMono) text-[#5C543C]">
-            Schedget
+            Schedgy
           </span>
         </div>
         <div className="flex items-center space-x-8">

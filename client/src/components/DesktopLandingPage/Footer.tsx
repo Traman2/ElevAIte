@@ -12,7 +12,7 @@ export default function Footer() {
               />
               <div>
                 <span className="text-xl font-bold text-white font-(family-name:--font-IBMPlexMono)">
-                  Schedget
+                  Schedgy
                 </span>
                 <p className="mt-1 text-sm font-(family-name:--font-IBMPlexSans) text-gray-300">
                   All in one platform to manage your finances and schedule
@@ -30,7 +30,7 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a href="#features" className="text-gray-300 hover:text-white">
                     Features
                   </a>
                 </li>
@@ -40,7 +40,7 @@ export default function Footer() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="text-gray-300 hover:text-white">
+                  <a href="#faqs" className="text-gray-300 hover:text-white">
                     FAQs
                   </a>
                 </li>

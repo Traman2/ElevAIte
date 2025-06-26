@@ -5,8 +5,8 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 
 const transactionFormSchema = z.object({
-  accountId: z.string().min(1, "Account is required"),
-  balance: z
+  accountNumber: z.string().min(1, "Account is required"),
+  amount: z
     .string()
     .refine((val) => {
       const num = parseFloat(val);
@@ -15,11 +15,14 @@ const transactionFormSchema = z.object({
     .refine((val) => {
       const parts = val.split(".");
       return parts.length === 1 || (parts.length === 2 && parts[1].length <= 2);
-    }, "Balance can have up to 2 decimal places"),
+    }, "Amount can have up to 2 decimal places"),
   transactionName: z
     .string()
     .min(1, "Transaction name is required")
     .max(20, "Transaction name must be 20 characters or less"),
+  category: z.enum(["Deposit", "Withdraw"], {
+    required_error: "Please select a category",
+  }),
 });
 
 type TransactionFormData = z.infer<typeof transactionFormSchema>;
@@ -27,11 +30,13 @@ type TransactionFormData = z.infer<typeof transactionFormSchema>;
 interface TransactionModalProps {
   onClose?: () => void;
   userId?: string;
+  onTransactionAdded?: () => void;
 }
 
 export default function TransactionModal({
   onClose,
   userId,
+  onTransactionAdded
 }: TransactionModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -49,8 +54,9 @@ export default function TransactionModal({
     resolver: zodResolver(transactionFormSchema),
   });
 
-  const selectedAccountId = watch("accountId");
-  const selectedAccount = accounts.find((a) => a._id === selectedAccountId);
+  const selectedAccountNumber = watch("accountNumber");
+  const selectedCategory = watch("category");
+  const selectedAccount = accounts.find((a) => a.accountNumber === selectedAccountNumber || a._id === selectedAccountNumber);
 
   useEffect(() => {
     if (!userId) return;
@@ -80,15 +86,29 @@ export default function TransactionModal({
 
   const onSubmit = async (data: TransactionFormData) => {
     setIsSubmitting(true);
-    console.log(data);
-    console.log(userId);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
-      setTimeout(() => {
-        if (onClose) onClose();
-      }, 1000);
-    }, 1500);
+    const submitData = {
+      userId: userId,
+      accountNumber: selectedAccount ? selectedAccount._id : '',
+      accountName: selectedAccount ? selectedAccount.accountName : '',
+      transactionName: data.transactionName,
+      category: data.category,
+      amount: data.amount,
+    };
+    await axios
+      .post("http://localhost:3000/transaction/create", submitData)
+      .then(() => {
+        setIsSuccess(true);
+        if (onTransactionAdded) onTransactionAdded();
+        setTimeout(() => {
+          if (onClose) {
+            onClose();
+          }
+        }, 2000);
+      })
+      .catch((err) => {
+        setIsSubmitting(false);
+        console.error("Server not responding", err);
+      });
   };
 
   return (
@@ -101,7 +121,7 @@ export default function TransactionModal({
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           <div>
             <label
-              htmlFor="accountId"
+              htmlFor="accountNumber"
               className="block text-sm font-medium text-[#3F3131] mb-2"
             >
               Select Account:
@@ -109,7 +129,7 @@ export default function TransactionModal({
             <div className="relative" ref={inputRef}>
               <input
                 type="text"
-                id="accountId"
+                id="accountNumber"
                 readOnly
                 value={selectedAccount ? selectedAccount.accountName : ""}
                 placeholder="Choose an account"
@@ -117,7 +137,7 @@ export default function TransactionModal({
                 onClick={() => setShowDropdown((prev) => !prev)}
                 disabled={isSubmitting || isSuccess}
                 tabIndex={0}
-                {...register("accountId")}
+                {...register("accountNumber")}
                 style={{ backgroundColor: isSubmitting || isSuccess ? "#f3f3f3" : undefined }}
               />
               <svg
@@ -140,9 +160,9 @@ export default function TransactionModal({
                     accounts.map((account) => (
                       <div
                         key={account._id}
-                        className={`px-4 py-2 cursor-pointer text-[#3F3131] ${selectedAccountId === account._id ? "bg-[#1E90FF] text-white" : "hover:bg-[#a89c9c]"}`}
+                        className={`px-4 py-2 cursor-pointer text-[#3F3131] ${selectedAccountNumber === account.accountNumber || selectedAccountNumber === account._id ? "bg-[#1E90FF] text-white" : "hover:bg-[#a89c9c]"}`}
                         onClick={() => {
-                          setValue("accountId", account._id, { shouldValidate: true });
+                          setValue("accountNumber", account.accountNumber || account._id, { shouldValidate: true });
                           setShowDropdown(false);
                         }}
                       >
@@ -156,9 +176,9 @@ export default function TransactionModal({
                 </div>
               )}
             </div>
-            {errors.accountId && (
+            {errors.accountNumber && (
               <p className="text-red-600 text-sm mt-1">
-                {errors.accountId.message}
+                {errors.accountNumber.message}
               </p>
             )}
           </div>
@@ -176,7 +196,7 @@ export default function TransactionModal({
               maxLength={20}
               {...register("transactionName")}
               className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
-              placeholder="Enter account name"
+              placeholder="Enter transaction name"
               disabled={isSubmitting || isSuccess}
             />
             {errors.transactionName && (
@@ -186,20 +206,60 @@ export default function TransactionModal({
             )}
           </div>
           <div>
+            <label className="block text-sm font-medium text-[#3F3131] mb-3">
+              Category
+            </label>
+            <div className="flex gap-1">
+              {["Deposit", "Withdraw"].map((type) => (
+                <label key={type} className="flex items-center">
+                  <input
+                    type="radio"
+                    value={type}
+                    {...register("category")}
+                    className="sr-only"
+                    disabled={isSubmitting || isSuccess}
+                  />
+                  <div
+                    className={`
+                    px-4 py-2 rounded-3xl border-2 cursor-pointer transition-all
+                    ${
+                      selectedCategory === type
+                        ? "bg-[#FCD34D] border-[#FCD34D] text-[#3F3131]"
+                        : "bg-white border-gray-300 text-gray-600 hover:border-[#FCD34D]"
+                    }
+                    ${
+                      isSubmitting || isSuccess
+                        ? "opacity-50 cursor-not-allowed"
+                        : ""
+                    }
+                  `}
+                  >
+                    {type}
+                  </div>
+                </label>
+              ))}
+            </div>
+            {errors.category && (
+              <p className="text-red-600 text-sm mt-1">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+          <div>
             <label
-              htmlFor="balance"
+              htmlFor="amount"
               className="block text-sm font-medium text-[#3F3131] mb-2"
             >
-              Balance:
+              Amount:
             </label>
             <div className="flex items-center">
               <span className="text-lg text-[#3F3131] mr-2">$</span>
               <input
                 type="number"
-                id="balance"
+                id="amount"
                 step="0.01"
                 min="0"
-                {...register("balance")}
+                {...register("amount")}
                 className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed no-spinner"
                 placeholder="0.00"
                 disabled={isSubmitting || isSuccess}
@@ -217,9 +277,9 @@ export default function TransactionModal({
                 }}
               />
             </div>
-            {errors.balance && (
+            {errors.amount && (
               <p className="text-red-600 text-sm mt-1">
-                {errors.balance.message}
+                {errors.amount.message}
               </p>
             )}
           </div>

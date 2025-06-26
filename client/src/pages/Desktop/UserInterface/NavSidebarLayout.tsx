@@ -16,6 +16,7 @@ import Settings from "./Settings";
 import AssetModal from "../../../components/DesktopModals/AssetModal";
 import TransactionModal from "../../../components/DesktopModals/TransactionModal";
 import SearchModal from "../../../components/DesktopModals/SearchModal";
+import TransactionTableModal from "../../../components/DesktopModals/TransactionTableModal";
 
 interface Props {
   page: string;
@@ -37,10 +38,12 @@ export default function NavSidebarLayout({ page }: Props) {
     isOpen: boolean;
     type: string;
     title: string;
+    accountNumber?: string;
   }>({
     isOpen: false,
     type: "",
     title: "",
+    accountNumber: undefined,
   });
   const [showModal, setShowModal] = useState(false);
   const [animateOut, setAnimateOut] = useState(false);
@@ -89,6 +92,15 @@ export default function NavSidebarLayout({ page }: Props) {
       isOpen: false,
       type: "",
       title: "",
+    });
+  };
+
+  const handleShowTransactionTable = (accountNumber: string) => {
+    setModalState({
+      isOpen: true,
+      type: "transactionTable",
+      title: "Transaction Table",
+      accountNumber: accountNumber,
     });
   };
 
@@ -154,7 +166,7 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Accounts":
         return <Accounts onAddAsset={handleAddAsset} />;
       case "Transactions":
-        return <Transactions onAddTransaction={handleAddTransaction} />;
+        return <Transactions onAddTransaction={handleAddTransaction} userData={userData} onShowTransactionTable={handleShowTransactionTable}/>;
       case "Deposits":
         return <Deposits />;
       case "Tasks":
@@ -176,9 +188,11 @@ export default function NavSidebarLayout({ page }: Props) {
       case "addAsset":
         return <AssetModal onClose={handleCloseModal} userId={userData?._id} onAssetAdded={fetchTotalAssets} />;
       case "addTransaction":
-        return <TransactionModal onClose={handleCloseModal} userId={userData?._id}/>;
+        return <TransactionModal onClose={handleCloseModal} userId={userData?._id} onTransactionAdded={fetchTotalAssets}/>;
       case "search":
         return <SearchModal/>
+      case "transactionTable":
+        return <TransactionTableModal onClose={handleCloseModal} accountNumber={modalState.accountNumber!}/>
       default:
         return null;
     }

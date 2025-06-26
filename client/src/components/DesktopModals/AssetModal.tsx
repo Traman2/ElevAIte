@@ -49,7 +49,6 @@ export default function AssetModal({ onClose, userId, onAssetAdded }: AssetModal
 
   const onSubmit = async (data: AssetFormData) => {
     setIsSubmitting(true);
-    console.log(userId);
     await axios
       .post("http://localhost:3000/bankaccount/create", {
         accountName: data.accountName,
@@ -76,7 +75,7 @@ export default function AssetModal({ onClose, userId, onAssetAdded }: AssetModal
     <>
       <div className="bg-[#E7D7D7] rounded-lg p-8 shadow-lg w-[500px]">
         <h2 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexMono) mb-4">
-          Create New Asset
+          Create New Account
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

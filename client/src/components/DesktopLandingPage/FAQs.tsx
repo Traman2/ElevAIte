@@ -9,7 +9,7 @@ export default function FAQs() {
 
   const FAQS = [
     {
-      question: "What is Schedget?",
+      question: "What is Schedgy?",
       answer:
         "Schedgy is an all-in-one platform to organize your schedule and budget, designed for students and young professionals.",
     },
@@ -18,14 +18,14 @@ export default function FAQs() {
       answer: "No...",
     },
     {
-      question: "Can I use Schedget for free?",
+      question: "Can I use Schedgy for free?",
       answer:
-        "Schedget is free for all college students although its recommended not to use the deployed version for personal use",
+        "Schedgy is free for all college students although its recommended not to use the deployed version for personal use",
     },
     {
-      question: "Why did I make Schedget?",
+      question: "Why did I make Schedgy?",
       answer:
-        "I created Schedget because I needed a way to keep track of assignments more efficiently and with less clutter than Google Calendar. I also wanted a simple way to manage the income from my on-campus job. So, I built Schedget to help me manage my time and money wisely while also learning a bit of web development along the way",
+        "I created Schedgy because I needed a way to keep track of assignments more efficiently and with less clutter than Google Calendar. I also wanted a simple way to manage the income from my on-campus job. So, I built Schedget to help me manage my time and money wisely while also learning a bit of web development along the way",
     },
     {
       question: "Who can I contact for support?",
