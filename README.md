@@ -8,7 +8,7 @@
 Schedgy is a Budget/Time Management/Personal Planner for students to keep track of their finances and academic activities all in one web app. Instead of having to rely on different apps such as Google Calendar, Notion, Mint (Budget Planner made by Intuit) and the other platforms out there, students can just make one account with Schedgy and start doing all those things right off the main menu. The web app also takes transaction data inputed from the user and creates a map using to Google Maps API to show where the most amount of money is being spent to help reduce spendetures and increase savings.
 </p>
 
-# Tech Stack ⚙️
+## Tech Stack ⚙️
 <details>
   
 **<summary>Frontend</summary>**
@@ -39,13 +39,13 @@ Schedgy is a Budget/Time Management/Personal Planner for students to keep track 
 
 </details>
 
-# Future Goals 🥅
+## Future Goals 🥅
 
 - **Internship Manager Portal**: A dedicated portal for students to track, manage, and organize internship applications, deadlines, and progress.
 - **Email Reminders**: Automated email notifications to remind users about upcoming tasks, deadlines, and important events.
 - **Native Browser Notification Support**: Real-time browser notifications to keep users updated on tasks, transactions, and reminders without needing to check their email.
 
-# What seperates Schedgy from the Competition 🏆
+## What seperates Schedgy from the Competition 🏆
 
 Schedgy stands out from other productivity and budgeting apps by combining multiple essential tools into a single, unified platform designed specifically for students. Unlike other solutions that require juggling between different apps for budgeting, planning, and tracking academic activities, Schedgy offers:
 
@@ -55,7 +55,7 @@ Schedgy stands out from other productivity and budgeting apps by combining multi
 - **Seamless User Experience**: Fast, responsive, and intuitive UI built with modern technologies for a smooth experience on any device.
 - **Privacy First**: Your data stays secure and private, with no third-party tracking or unnecessary data sharing.
 
-# GitHub Cheatsheet 📚
+## GitHub Cheatsheet 📚
 
 | Command | Description |
 | ------- | ----------- |
@@ -80,7 +80,7 @@ Schedgy stands out from other productivity and budgeting apps by combining multi
 | `git rm <file-name>` | Remove a file from the working directory and staging area |
 | `git revert <commit>` | Create a new commit that undoes the changes from a previous commit |
 
-# Team 👋
+## Team 👋
 
 - Frontend Developer - Tejas Raman
 - Backend Developer - Tejas Raman
