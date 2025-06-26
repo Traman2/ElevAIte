@@ -4,12 +4,10 @@
 
 <h1 align="center">
   <span style="display: inline-flex; align-items: center; gap: 12px;">
-    <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40" style="vertical-align: middle;"/>
+    <img src="client/public/icons/noto--money-bag.svg" alt="Schedgy Logo" width="40" height="40" style="vertical-align: middle; margin-top: 12px;"/>
     <span style="font-size: 2.5rem; font-weight: bold; vertical-align: middle;">Schedgy</span>
   </span>
 </h1>
-
----
 
 <p align="center">
 Schedgy is a Budget/Time Management/Personal Planner for students to keep track of their finances and academic activities all in one web app. Instead of having to rely on different apps such as Google Calendar, Notion, Mint (Budget Planner made by Intuit) and the other platforms out there, students can just make one account with Schedgy and start doing all those things right off the main menu. The web app also takes transaction data inputed from the user and creates a map using to Google Maps API to show where the most amount of money is being spent to help reduce spendetures and increase savings.
