@@ -39,6 +39,38 @@ Schedgy is a Budget/Time Management/Personal Planner for students to keep track 
 
 </details>
 
+## Setup 🚀
+
+Follow these steps to set up the project locally:
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Traman2/Schedgy.git
+   cd BudgLeaf
+   ```
+2. **Install dependencies for the client and server:**
+   ```bash
+   cd client
+   npm install
+   cd ../server
+   npm install
+   cd ..
+   ```
+3. **Start the server:**
+   ```bash
+   cd server
+   npm start
+   ```
+4. **Start the client (in a new terminal):**
+   ```bash
+   cd client
+   npm run dev
+   ```
+5. **Open the app:**
+   - Visit `http://localhost:5173` in your browser to use the app.
+
+> **Note:** Make sure you have Node.js and npm installed on your machine.
+
 ## Future Goals 🥅
 
 - **Internship Manager Portal**: A dedicated portal for students to track, manage, and organize internship applications, deadlines, and progress.
