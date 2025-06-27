@@ -60,6 +60,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [viewApplication, setViewApplication] = useState<ApplicationData | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [animateOut, setAnimateOut] = useState(false);
+  const [internshipRefreshKey, setInternshipRefreshKey] = useState(0);
 
   useEffect(() => {
     setActivePage(page);
@@ -200,7 +201,8 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Transactions":
         return <Transactions onAddTransaction={handleAddTransaction} userData={userData} onShowTransactionTable={handleShowTransactionTable}/>;
       case "InternshipManager":
-        return <InternshipManager onApplicationClick={handleViewApplication} onAddInternship={handleAddInternship} />;
+        return <InternshipManager userId={userData?._id} onApplicationClick={handleViewApplication} onAddInternship={handleAddInternship} refreshKey={internshipRefreshKey} />
+        
       case "Tasks":
         return <Tasks />;
       case "Calendar":
@@ -232,7 +234,7 @@ export default function NavSidebarLayout({ page }: Props) {
           <InternshipManagerModal application={viewApplication} />
         ) : null;
       case "addInternship":
-        return <InternshipAddModal onClose={handleCloseModal}/>
+        return <InternshipAddModal onClose={handleCloseModal} userId={userData?._id} onInternshipAdded={() => setInternshipRefreshKey(k => k + 1)} />
       default:
         return null;
     }
@@ -403,10 +405,35 @@ export default function NavSidebarLayout({ page }: Props) {
               </h3>
 
               <button
+                onClick={() => navigate("/InternshipManager")}
+                className={`${
+                  activePage === "InternshipManager" && "bg-[#FADEDE] shadow-sm"
+                } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors`}
+              >
+                <div className="flex items-center space-x-2">
+                  <img
+                    src="/icons/sidebar/tabler--pig-money.svg"
+                    alt="Internship Portal"
+                    className="w-6 h-6"
+                  />
+                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
+                    Internship Portal
+                  </span>
+                </div>
+                {activePage === "InternshipManager" && (
+                  <img
+                    src="/icons/sidebar/ic--sharp-arrow-right.svg"
+                    alt="Active"
+                    className="w-6 h-6"
+                  />
+                )}
+              </button>
+
+              <button
                 onClick={() => navigate("/Accounts")}
                 className={`${
                   activePage === "Accounts" && "bg-[#FADEDE] shadow-sm"
-                } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors`}
+                } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
                   <img
@@ -444,31 +471,6 @@ export default function NavSidebarLayout({ page }: Props) {
                   </span>
                 </div>
                 {activePage === "Transactions" && (
-                  <img
-                    src="/icons/sidebar/ic--sharp-arrow-right.svg"
-                    alt="Active"
-                    className="w-6 h-6"
-                  />
-                )}
-              </button>
-
-              <button
-                onClick={() => navigate("/InternshipManager")}
-                className={`${
-                  activePage === "InternshipManager" && "bg-[#FADEDE] shadow-sm"
-                } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
-              >
-                <div className="flex items-center space-x-2">
-                  <img
-                    src="/icons/sidebar/tabler--pig-money.svg"
-                    alt="Internship Portal"
-                    className="w-6 h-6"
-                  />
-                  <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
-                    Internship Portal
-                  </span>
-                </div>
-                {activePage === "InternshipManager" && (
                   <img
                     src="/icons/sidebar/ic--sharp-arrow-right.svg"
                     alt="Active"
