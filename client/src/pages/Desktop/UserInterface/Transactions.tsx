@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import ExcelJS from "exceljs";
-import { saveAs } from "file-saver";
+import downloadSingleAccountExcel from "../../../utils/TransactionAccountExcel";
+import downloadAllExcel from "../../../utils/TransactionExcel";
 
 interface Props {
   onAddTransaction: () => void;
@@ -23,7 +23,7 @@ interface UserBankAccount {
 interface UserTransactions {
   _id: string;
   userId: string;
-  accoundNumber: number;
+  accoundNumber: string;
   accountName: string;
   transactionName: string;
   category: string;
@@ -79,170 +79,6 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
 
     fetchUserTransactions();
   }, [userData]);
-
-  const downloadStyledExcel = async () => {
-    if (!userTransactions || !userBankAccounts) return;
-
-    const workbook = new ExcelJS.Workbook();
-
-    for (const account of userBankAccounts) {
-      const sheet = workbook.addWorksheet(account.accountName || "Account");
-
-      const accountTransactions = userTransactions.filter(
-        (txn) => txn.accountName === account.accountName
-      );
-
-      const formatDate = (dateStr: string) => {
-        const dateObj = new Date(dateStr);
-        return `${String(dateObj.getDate()).padStart(2, "0")}/${String(
-          dateObj.getMonth() + 1
-        ).padStart(2, "0")}/${dateObj.getFullYear()}`;
-      };
-
-      sheet.columns = [
-        { header: "Date", key: "date", width: 15 },
-        { header: "Transaction", key: "transactionName", width: 30 },
-        { header: "Category", key: "category", width: 20 },
-        { header: "Amount", key: "amount", width: 15 },
-      ];
-
-      accountTransactions.forEach((txn) => {
-        const amount = txn.category.toLowerCase() === "withdraw" ? -Math.abs(txn.amount) : txn.amount;
-        sheet.addRow({
-          date: formatDate(txn.createdAt),
-          transactionName: txn.transactionName,
-          category: txn.category,
-          amount,
-        });
-      });
-
-      const rowCount = accountTransactions.length;
-
-      const totalRow = sheet.addRow([
-        "",
-        "",
-        "Total",
-        { formula: `SUM(D2:D${rowCount + 1})`, result: 0 },
-      ]);
-      totalRow.font = { bold: true };
-      totalRow.eachCell((cell) => {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "B5B5B4" },
-        };
-      });
-
-      sheet.getRow(1).eachCell((cell) => {
-        cell.fill = {
-          type: "pattern",
-          pattern: "solid",
-          fgColor: { argb: "FFD700" },
-        };
-        cell.font = { bold: true };
-      });
-
-      sheet.eachRow((row, rowNumber) => {
-        if (rowNumber !== 1 && rowNumber !== rowCount + 2) {
-          row.eachCell((cell) => {
-            cell.fill = {
-              type: "pattern",
-              pattern: "solid",
-              fgColor: { argb: "D9D9D9" },
-            };
-          });
-        }
-      });
-
-      sheet.getColumn("amount").numFmt = '"$"#,##0.00;[Red]\-"$"#,##0.00';
-    }
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    saveAs(blob, "transactions_by_account.xlsx");
-  };
-
-  const downloadSingleAccountExcel = async (accountName: string) => {
-    if (!userTransactions) return;
-
-    const accountTransactions = userTransactions.filter(
-      (txn) => txn.accountName === accountName
-    );
-
-    const workbook = new ExcelJS.Workbook();
-    const sheet = workbook.addWorksheet(accountName || "Account");
-
-    const formatDate = (dateStr: string) => {
-      const dateObj = new Date(dateStr);
-      return `${String(dateObj.getDate()).padStart(2, "0")}/${String(
-        dateObj.getMonth() + 1
-      ).padStart(2, "0")}/${dateObj.getFullYear()}`;
-    };
-
-    sheet.columns = [
-      { header: "Date", key: "date", width: 15 },
-      { header: "Transaction", key: "transactionName", width: 30 },
-      { header: "Category", key: "category", width: 20 },
-      { header: "Amount", key: "amount", width: 15 },
-    ];
-
-    accountTransactions.forEach((txn) => {
-      const amount = txn.category.toLowerCase() === "withdraw" ? -Math.abs(txn.amount) : txn.amount;
-      sheet.addRow({
-        date: formatDate(txn.createdAt),
-        transactionName: txn.transactionName,
-        category: txn.category,
-        amount,
-      });
-    });
-
-    const rowCount = accountTransactions.length;
-
-    const totalRow = sheet.addRow([
-      "",
-      "",
-      "Total",
-      { formula: `SUM(D2:D${rowCount + 1})`, result: 0 },
-    ]);
-    totalRow.font = { bold: true };
-    totalRow.eachCell((cell) => {
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "B5B5B4" },
-      };
-    });
-
-    sheet.getRow(1).eachCell((cell) => {
-      cell.fill = {
-        type: "pattern",
-        pattern: "solid",
-        fgColor: { argb: "FFD700" },
-      };
-      cell.font = { bold: true };
-    });
-
-    sheet.eachRow((row, rowNumber) => {
-      if (rowNumber !== 1 && rowNumber !== rowCount + 2) {
-        row.eachCell((cell) => {
-          cell.fill = {
-            type: "pattern",
-            pattern: "solid",
-            fgColor: { argb: "D9D9D9" },
-          };
-        });
-      }
-    });
-    sheet.getColumn("amount").numFmt = '"$"#,##0.00;[Red]\-"$"#,##0.00';
-    const buffer = await workbook.xlsx.writeBuffer();
-    const blob = new Blob([buffer], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-    });
-
-    saveAs(blob, `${accountName}_transactions.xlsx`);
-  };
 
   const formatCurrency = (amount: number): string => {
     return amount.toLocaleString("en-US", {
@@ -301,45 +137,14 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
                   </button>
                   <button
                     onClick={() =>
-                      downloadSingleAccountExcel(account.accountName)
+                      downloadSingleAccountExcel(account.accountName, userTransactions || [])
                     }
                     className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FFD700] px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm"
                   >
                     Excel
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-4 items-start mt-3 mb-0">
-                  <div className="flex flex-col items-start space-y-0.5">
-                    <div className="flex items-center space-x-1">
-                      <img
-                        src="/icons/overview/ant-design--stock-outlined.svg"
-                        alt="Incoming"
-                        className="w-4 h-4"
-                      />
-                      <p className="text-sm font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                        Incoming
-                      </p>
-                    </div>
-                    <p className="text-sm font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                      USD {formatCurrency(account.incoming)}
-                    </p>
-                  </div>
-                  <div className="flex flex-col items-start pb-2 space-y-0.5">
-                    <div className="flex items-center space-x-1">
-                      <img
-                        src="/icons/overview/uil--money-withdraw.svg"
-                        alt="Spending"
-                        className="w-4 h-4"
-                      />
-                      <p className="text-sm font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                        Spending
-                      </p>
-                    </div>
-                    <p className="text-sm font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                      USD {formatCurrency(account.spending)}
-                    </p>
-                  </div>
-                </div>
+                
               </div>
             </>
           ))
@@ -354,7 +159,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
           Recent Purchases
         </h2>
         <button
-          onClick={() => downloadStyledExcel()}
+          onClick={() => downloadAllExcel(userTransactions || [], userBankAccounts || [])}
           className="cursor-pointer bg-[#D9D9D9] hover:bg-[#FFD700] text-black font-semibold px-4 py-1 rounded-2xl text-sm transition"
         >
           Download Excel

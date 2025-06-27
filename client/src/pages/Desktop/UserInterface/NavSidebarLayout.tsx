@@ -6,7 +6,7 @@ import axios from "axios";
 import Dashboard from "./Dashboard";
 import Accounts from "./Accounts";
 import Transactions from "./Transactions";
-import Deposits from "./Deposits";
+import InternshipManager from "./InternshipManager";
 import Tasks from "./Tasks";
 import Calendar from "./Calendar";
 import Security from "./Security";
@@ -164,11 +164,11 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Dashboard":
         return <Dashboard userData={userData} />;
       case "Accounts":
-        return <Accounts onAddAsset={handleAddAsset} />;
+        return <Accounts onAddAsset={handleAddAsset} userData={userData} />;
       case "Transactions":
         return <Transactions onAddTransaction={handleAddTransaction} userData={userData} onShowTransactionTable={handleShowTransactionTable}/>;
-      case "Deposits":
-        return <Deposits />;
+      case "InternshipManager":
+        return <InternshipManager />;
       case "Tasks":
         return <Tasks />;
       case "Calendar":
@@ -413,7 +413,7 @@ export default function NavSidebarLayout({ page }: Props) {
               </button>
 
               <button
-                onClick={() => navigate("/Deposits")}
+                onClick={() => navigate("/InternshipManager")}
                 className={`${
                   activePage === "Deposits" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
@@ -421,14 +421,14 @@ export default function NavSidebarLayout({ page }: Props) {
                 <div className="flex items-center space-x-2">
                   <img
                     src="/icons/sidebar/tabler--pig-money.svg"
-                    alt="Deposits"
+                    alt="Internship Portal"
                     className="w-6 h-6"
                   />
                   <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
-                    Deposits
+                    Internship Portal
                   </span>
                 </div>
-                {activePage === "Deposits" && (
+                {activePage === "IntershipManager" && (
                   <img
                     src="/icons/sidebar/ic--sharp-arrow-right.svg"
                     alt="Active"

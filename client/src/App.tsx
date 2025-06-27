@@ -36,7 +36,7 @@ export default function App() {
               <Route path="Dashboard" element={<NavSidebarLayout page="Dashboard" />} />
               <Route path="Accounts" element={<NavSidebarLayout page="Accounts" />} />
               <Route path="Transactions" element={<NavSidebarLayout page="Transactions" />} />
-              <Route path="Deposits" element={<NavSidebarLayout page="Deposits" />} />
+              <Route path="InternshipManager" element={<NavSidebarLayout page="InternshipManager" />} />
               <Route path="Tasks" element={<NavSidebarLayout page="Tasks" />} />
               <Route path="Calendar" element={<NavSidebarLayout page="Calendar" />} />
               <Route path="Security" element={<NavSidebarLayout page="Security" />} />
