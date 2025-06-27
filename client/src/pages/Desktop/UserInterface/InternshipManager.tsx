@@ -101,7 +101,7 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
               <tbody>
                 {internships.map((app, idx) => (
                   <tr
-                    key={app._id}
+                    key={idx}
                     className="border-b border-[#F4D5D5] last:border-b-0 hover:bg-[#FADEDE]/60 transition-colors cursor-pointer"
                     onClick={() => onApplicationClick(app)}
                   >
