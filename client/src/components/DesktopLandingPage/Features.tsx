@@ -79,7 +79,7 @@ export default function Features() {
               <div className="flex flex-row-reverse items-center justify-between gap-10">
                 <div className="flex-1">
                   <h2 className="text-2xl font-semibold font-(family-name:--font-IBMPlexSans) text-[#5C543C] mb-4">
-                    Manage Everything in One Panel
+                    Internship Manager
                   </h2>
                   <p className="text-base font-medium font-(family-name:--font-IBMPlexSans) text-[#6B6B6B]">
                     Visualize your spending on an interactive map and Know when
@@ -89,9 +89,9 @@ export default function Features() {
                 <div className="flex-shrink-0 flex justify-start">
                   <div className="light-blue-box">
                     <img
-                      src="/landingAssets/overview.png"
+                      src="/landingAssets/internship.png"
                       alt="Overview"
-                      className="w-[450px] h-[300px] rounded-2xl shadow-lg object-cover"
+                      className="w-[420px] h-[300px] rounded-2xl shadow-lg object-cover"
                     />
                   </div>
                 </div>
