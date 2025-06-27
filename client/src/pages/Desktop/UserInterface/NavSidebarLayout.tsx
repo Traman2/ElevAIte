@@ -18,6 +18,7 @@ import TransactionModal from "../../../components/DesktopModals/TransactionModal
 import SearchModal from "../../../components/DesktopModals/SearchModal";
 import TransactionTableModal from "../../../components/DesktopModals/TransactionTableModal";
 import InternshipManagerModal from "../../../components/DesktopModals/InternshipManagerModal";
+import InternshipAddModal from "../../../components/DesktopModals/InternshipAddModal";
 
 interface Props {
   page: string;
@@ -97,6 +98,14 @@ export default function NavSidebarLayout({ page }: Props) {
       isOpen: true,
       type: "addTransaction",
       title: "Add Transaction",
+    });
+  };
+
+  const handleAddInternship = () => {
+    setModalState({
+      isOpen: true,
+      type: "addInternship",
+      title: "Add Internship",
     });
   };
 
@@ -191,7 +200,7 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Transactions":
         return <Transactions onAddTransaction={handleAddTransaction} userData={userData} onShowTransactionTable={handleShowTransactionTable}/>;
       case "InternshipManager":
-        return <InternshipManager onApplicationClick={handleViewApplication} />;
+        return <InternshipManager onApplicationClick={handleViewApplication} onAddInternship={handleAddInternship} />;
       case "Tasks":
         return <Tasks />;
       case "Calendar":
@@ -222,6 +231,8 @@ export default function NavSidebarLayout({ page }: Props) {
         return viewApplication ? (
           <InternshipManagerModal application={viewApplication} />
         ) : null;
+      case "addInternship":
+        return <InternshipAddModal onClose={handleCloseModal}/>
       default:
         return null;
     }

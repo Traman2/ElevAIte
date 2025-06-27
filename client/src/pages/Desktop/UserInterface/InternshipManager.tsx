@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 const dummyData = [
   {
     date: "2025-01-12",
@@ -48,24 +46,10 @@ const statusColors: Record<string, string> = {
 
 interface InternshipManagerProps {
   onApplicationClick: (application: typeof dummyData[0]) => void;
+  onAddInternship: () => void;
 }
 
-export default function InternshipManager({ onApplicationClick }: InternshipManagerProps) {
-  const [applications, setApplications] = useState(dummyData);
-
-  const handleAdd = () => {
-    setApplications([
-      ...applications,
-      {
-        date: new Date().toISOString().slice(0, 10),
-        name: "New Internship Application",
-        category: "Tech",
-        employer: "New Employer",
-        status: "Pending",
-        description: "No description provided.",
-      },
-    ]);
-  };
+export default function InternshipManager({ onApplicationClick, onAddInternship }: InternshipManagerProps) {
 
   return (
     <>
@@ -75,14 +59,14 @@ export default function InternshipManager({ onApplicationClick }: InternshipMana
           Internship Manager
         </h1>
         <button
-          onClick={handleAdd}
+          onClick={onAddInternship}
           className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-4"
         >
           Add
         </button>
       </div>
         <div className="w-full flex-1 min-h-0 overflow-x-hidden rounded-lg">
-          {applications.length === 0 ? (
+          {dummyData.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-64">
               <p className="mb-4 text-lg text-[#3F3131] font-bold font-(family-name:--font-IBMPlexSans) border-dashed border-[#654545] border-3 p-8 rounded-4xl">
                 No applications found
@@ -106,7 +90,7 @@ export default function InternshipManager({ onApplicationClick }: InternshipMana
                 </tr>
               </thead>
               <tbody>
-                {applications.map((app, idx) => (
+                {dummyData.map((app, idx) => (
                   <tr
                     key={idx}
                     className="border-b border-[#F4D5D5] last:border-b-0 hover:bg-[#FADEDE]/60 transition-colors cursor-pointer"
