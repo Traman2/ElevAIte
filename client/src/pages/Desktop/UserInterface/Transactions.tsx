@@ -166,22 +166,14 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
         </button>
       </div>
 
-      <div className="relative overflow-x-auto rounded-lg border-3 border-gray-400 shadow-lg font-(family-name:--font-IBMPlexSans)">
-        <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-          <thead className="text-xs text-gray-700 uppercase bg-[#c2bcbc]">
+      <div className="relative rounded-2xl overflow-x-auto">
+        <table className="w-full bg-white rounded-lg shadow-lg">
+          <thead className="sticky top-0 z-10 bg-[#EED2D2] text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
             <tr>
-              <th scope="col" className="px-6 py-3">
-                Account
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Category
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Price
-              </th>
+              <th className="py-3 px-4 text-left font-semibold">Account</th>
+              <th className="py-3 px-4 text-left font-semibold">Name</th>
+              <th className="py-3 px-4 text-left font-semibold">Category</th>
+              <th className="py-3 px-4 text-left font-semibold">Price</th>
             </tr>
           </thead>
           <tbody>
@@ -194,27 +186,15 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
                 )
                 .slice(0, 5)
                 .map((transactions) => (
-                  <>
-                    <tr className="bg-[#D9D4D4] border-b border-gray-400">
-                      <td className="px-6 pr-29 py-4 text-gray-700">
-                        {transactions.accountName}
-                      </td>
-                      <th className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                        {transactions.transactionName}
-                      </th>
-                      <td className="px-6 py-4 text-gray-700">
-                        {transactions.category}
-                      </td>
-                      <td className="px-6 py-4 text-gray-700">
-                        {formatCurrency(transactions.amount)}
-                      </td>
-                    </tr>
-                  </>
+                  <tr className="border-b border-[#F4D5D5] last:border-b-0 transition-colors bg-white" key={transactions._id}>
+                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.accountName}</td>
+                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.transactionName}</td>
+                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{transactions.category}</td>
+                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{formatCurrency(transactions.amount)}</td>
+                  </tr>
                 ))
             ) : (
-              <p className="font-medium text-[#3F3131] mb-5 font-(family-name:--font-IBMPlexSans)">
-                No transactions found
-              </p>
+              <tr><td colSpan={4} className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)">No transactions found</td></tr>
             )}
           </tbody>
         </table>

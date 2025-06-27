@@ -17,6 +17,7 @@ import AssetModal from "../../../components/DesktopModals/AssetModal";
 import TransactionModal from "../../../components/DesktopModals/TransactionModal";
 import SearchModal from "../../../components/DesktopModals/SearchModal";
 import TransactionTableModal from "../../../components/DesktopModals/TransactionTableModal";
+import InternshipManagerModal from "../../../components/DesktopModals/InternshipManagerModal";
 
 interface Props {
   page: string;
@@ -30,6 +31,15 @@ interface UserData {
   email: string;
 }
 
+interface ApplicationData {
+  date: string;
+  name: string;
+  category: string;
+  employer: string;
+  status: string;
+  description: string;
+}
+
 export default function NavSidebarLayout({ page }: Props) {
   const [activePage, setActivePage] = useState(page);
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -38,13 +48,15 @@ export default function NavSidebarLayout({ page }: Props) {
     isOpen: boolean;
     type: string;
     title: string;
-    accountNumber?: string;
   }>({
     isOpen: false,
     type: "",
     title: "",
-    accountNumber: undefined,
   });
+
+  //Pass through values for modal
+  const [transactionAccountNumber, setTransactionAccountNumber] = useState<string | null>(null);
+  const [viewApplication, setViewApplication] = useState<ApplicationData | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [animateOut, setAnimateOut] = useState(false);
 
@@ -62,12 +74,21 @@ export default function NavSidebarLayout({ page }: Props) {
     navigate("/Accounts");
   };
 
-  //Modal Handlers
+  //Modal Handlers (Passes these into panel components)
   const handleAddAsset = () => {
     setModalState({
       isOpen: true,
       type: "addAsset",
       title: "Create New Asset",
+    });
+  };
+
+  const handleViewApplication = (application: ApplicationData) => {
+    setViewApplication(application);
+    setModalState({
+      isOpen: true,
+      type: "viewApplication",
+      title: application.name,
     });
   };
 
@@ -87,21 +108,23 @@ export default function NavSidebarLayout({ page }: Props) {
     });
   };
 
+  const handleShowTransactionTable = (accountNumber: string) => {
+    setTransactionAccountNumber(accountNumber);
+    setModalState({
+      isOpen: true,
+      type: "transactionTable",
+      title: "Transaction Table",
+    });
+  };
+  
   const handleCloseModal = () => {
     setModalState({
       isOpen: false,
       type: "",
       title: "",
     });
-  };
-
-  const handleShowTransactionTable = (accountNumber: string) => {
-    setModalState({
-      isOpen: true,
-      type: "transactionTable",
-      title: "Transaction Table",
-      accountNumber: accountNumber,
-    });
+    setTransactionAccountNumber(null);
+    setViewApplication(null);
   };
 
   //Decrypt user data from jwt
@@ -168,7 +191,7 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Transactions":
         return <Transactions onAddTransaction={handleAddTransaction} userData={userData} onShowTransactionTable={handleShowTransactionTable}/>;
       case "InternshipManager":
-        return <InternshipManager />;
+        return <InternshipManager onApplicationClick={handleViewApplication} />;
       case "Tasks":
         return <Tasks />;
       case "Calendar":
@@ -190,9 +213,15 @@ export default function NavSidebarLayout({ page }: Props) {
       case "addTransaction":
         return <TransactionModal onClose={handleCloseModal} userId={userData?._id} onTransactionAdded={fetchTotalAssets}/>;
       case "search":
-        return <SearchModal/>
+        return <SearchModal/>;
       case "transactionTable":
-        return <TransactionTableModal onClose={handleCloseModal} accountNumber={modalState.accountNumber!}/>
+        return transactionAccountNumber ? (
+          <TransactionTableModal onClose={handleCloseModal} accountNumber={transactionAccountNumber} />
+        ) : null;
+      case "viewApplication":
+        return viewApplication ? (
+          <InternshipManagerModal application={viewApplication} />
+        ) : null;
       default:
         return null;
     }
@@ -415,7 +444,7 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 onClick={() => navigate("/InternshipManager")}
                 className={`${
-                  activePage === "Deposits" && "bg-[#FADEDE] shadow-sm"
+                  activePage === "InternshipManager" && "bg-[#FADEDE] shadow-sm"
                 } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
               >
                 <div className="flex items-center space-x-2">
@@ -428,7 +457,7 @@ export default function NavSidebarLayout({ page }: Props) {
                     Internship Portal
                   </span>
                 </div>
-                {activePage === "IntershipManager" && (
+                {activePage === "InternshipManager" && (
                   <img
                     src="/icons/sidebar/ic--sharp-arrow-right.svg"
                     alt="Active"

@@ -46,6 +46,23 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
+            <div>
+              <h3 className="mb-4 text-lg font-bold font-(family-name:--font-IBMPlexSans) text-white">
+                Legal
+              </h3>
+              <ul className="space-y-2 font-(family-name:--font-IBMPlexSans)">
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">
+                    Privacy Policy
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-gray-300 hover:text-white">
+                    Terms &amp; Conditions
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div className="mt-12 border-t border-gray-300 pt-8 text-center">
             <p className="text-sm text-gray-300">

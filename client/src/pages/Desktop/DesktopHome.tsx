@@ -93,13 +93,6 @@ export default function DesktopHome() {
             Features
           </a>
           <a
-            href="#about"
-            onClick={(e) => handleNavClick(e, "about")}
-            className="text-base font-semibold font-(family-name:--font-IBMPlexSans) text-[#5C543C] hover:underline underline-offset-8 decoration-[1px] transition-all duration-150"
-          >
-            How it works
-          </a>
-          <a
             href="#faq"
             onClick={(e) => handleNavClick(e, "faq")}
             className="text-base font-semibold font-(family-name:--font-IBMPlexSans) text-[#5C543C] hover:underline underline-offset-8 decoration-[1px] transition-all duration-150"
