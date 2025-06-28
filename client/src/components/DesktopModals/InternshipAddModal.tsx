@@ -105,13 +105,13 @@ export default function InternshipAddModal({
             htmlFor="date"
             className="block text-sm font-medium text-[#3F3131] mb-2"
           >
-            Date Added (YYYY-MM-DD):
+            Date Added:
           </label>
           <input
             type="text"
             id="date"
             maxLength={10}
-            placeholder="2024-06-01"
+            placeholder="YYYY-MM-DD"
             {...register("date")}
             className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isSubmitting || isSuccess}

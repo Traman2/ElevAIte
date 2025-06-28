@@ -44,6 +44,11 @@ export default function Footer() {
                     FAQs
                   </a>
                 </li>
+                <li>
+                  <a href="https://github.com/Traman2/Schedgy" target="_blank" className="text-gray-300 hover:text-white">
+                    Github Repository
+                  </a>
+                </li>
               </ul>
             </div>
             <div>
