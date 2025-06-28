@@ -172,6 +172,41 @@ export default function Accounts({ onAddAsset, userData }: Props) {
           Download Excel
         </button>
       </div>
+
+      <div className="relative rounded-lg overflow-x-auto">
+        <table className="w-full bg-white shadow-lg">
+          <thead className="sticky top-0 z-10 bg-[#EED2D2] text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+            <tr>
+              <th className="py-3 px-4 text-left font-semibold">Account</th>
+              <th className="py-3 px-4 text-left font-semibold">Name</th>
+              <th className="py-3 px-4 text-left font-semibold">Category</th>
+              <th className="py-3 px-4 text-left font-semibold">Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userTransactions ? (
+              userTransactions
+                .filter(transaction => transaction.category === "Deposit")
+                .sort(
+                  (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+                )
+                .slice(0, 5)
+                .map((transaction) => (
+                  <tr className="border-b border-[#F4D5D5] last:border-b-0 transition-colors bg-white" key={transaction._id}>
+                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transaction.accountName}</td>
+                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transaction.transactionName}</td>
+                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{transaction.category}</td>
+                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{formatCurrency(transaction.amount)}</td>
+                  </tr>
+                ))
+            ) : (
+              <tr><td colSpan={4} className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)">No deposits found</td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
