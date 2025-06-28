@@ -3,7 +3,7 @@ export default function Features() {
     <>
       <section className="w-full bg-[#fff] px-0 p-20 rounded-4xl relative z-10 overflow-x-hidden">
         <div className="max-w-[1100px] mx-auto px-8">
-          <div id="features" className="mt-110">
+          <div id="features" className="mt-30">
             <div className="text-center mb-8">
               <span className="text-base font-bold tracking-widest text-[#C2B280] font-(family-name:--font-IBMPlexSans)">
                 Features

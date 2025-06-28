@@ -36,6 +36,7 @@ interface UserData {
 }
 
 interface ApplicationData {
+  _id: string;
   date: string;
   name: string;
   category: string;
@@ -268,6 +269,7 @@ export default function NavSidebarLayout({ page }: Props) {
           <InternshipManagerModal
             application={viewApplication}
             onClose={handleCloseModal}
+            onDelete={() => setInternshipRefreshKey((k) => k + 1)}
           />
         ) : null;
       case "addInternship":

@@ -1,4 +1,7 @@
+import axios from 'axios';
+
 interface ApplicationData {
+  _id: string;
   date: string;
   name: string;
   category: string;
@@ -10,6 +13,7 @@ interface ApplicationData {
 interface InternshipManagerModalProps {
   application: ApplicationData;
   onClose: () => void;
+  onDelete?: () => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -22,7 +26,25 @@ const statusColors: Record<string, string> = {
 export default function InternshipManagerModal({
   application,
   onClose,
+  onDelete,
 }: InternshipManagerModalProps) {
+  const handleDelete = () => {
+    console.log(application._id)
+    axios.delete(`http://localhost:3000/internship/${application._id}`)
+      .then((response) => {
+        if (response.status === 200) {
+          if (onDelete) {
+            onDelete();
+          }
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error('Error deleting application:', error);
+        alert('Error deleting application. Please try again.');
+      });
+  };
+
   return (
     <>
       <div className="bg-[#E7D7D7] rounded-lg p-8 shadow-lg w-[500px]">
@@ -63,14 +85,20 @@ export default function InternshipManagerModal({
             {application?.description}
           </div>
         </div>
-        {/* Cancel Button */}
-        <div className="mt-6">
+        <div className="mt-6 flex gap-3">
           <button
             type="button"
             onClick={onClose}
             className="cursor-pointer text-sm bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200"
           >
             Close
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            className="cursor-pointer text-sm bg-red-500 font-(family-name:--font-IBMPlexSans) text-white font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-red-600 transition-colors duration-200"
+          >
+            Delete
           </button>
         </div>
       </div>
