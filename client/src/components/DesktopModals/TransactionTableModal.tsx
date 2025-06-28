@@ -17,7 +17,7 @@ interface TransactionTableProps {
     accountNumber: string;
 }
 
-export default function TransactionTableModal({ accountNumber } : TransactionTableProps) {
+export default function TransactionTableModal({ accountNumber, onClose } : TransactionTableProps) {
   const [userTransactions, setUserTransactions] = useState<
     UserTransactions[] | null
   >(null);
@@ -106,6 +106,15 @@ export default function TransactionTableModal({ accountNumber } : TransactionTab
               )}
             </tbody>
           </table>
+        </div>
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer text-sm bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200"
+          >
+            Close
+          </button>
         </div>
       </div>
     </>
