@@ -231,7 +231,7 @@ export default function NavSidebarLayout({ page }: Props) {
         ) : null;
       case "viewApplication":
         return viewApplication ? (
-          <InternshipManagerModal application={viewApplication} />
+          <InternshipManagerModal application={viewApplication} onClose={handleCloseModal} />
         ) : null;
       case "addInternship":
         return <InternshipAddModal onClose={handleCloseModal} userId={userData?._id} onInternshipAdded={() => setInternshipRefreshKey(k => k + 1)} />

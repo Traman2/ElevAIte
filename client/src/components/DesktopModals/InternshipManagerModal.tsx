@@ -9,6 +9,7 @@ interface ApplicationData {
 
 interface InternshipManagerModalProps {
   application: ApplicationData;
+  onClose: () => void;
 }
 
 const statusColors: Record<string, string> = {
@@ -20,6 +21,7 @@ const statusColors: Record<string, string> = {
 
 export default function InternshipManagerModal({
   application,
+  onClose,
 }: InternshipManagerModalProps) {
   return (
     <>
@@ -60,6 +62,16 @@ export default function InternshipManagerModal({
           <div className="mt-1 text-[#3F3131] text-sm font-(family-name:--font-IBMPlexSans)">
             {application?.description}
           </div>
+        </div>
+        {/* Cancel Button */}
+        <div className="mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="cursor-pointer text-sm bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200"
+          >
+            Close
+          </button>
         </div>
       </div>
     </>
