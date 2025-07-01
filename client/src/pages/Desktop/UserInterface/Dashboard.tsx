@@ -25,6 +25,99 @@ interface UserBankAccount {
   spending: number;
 }
 
+const classTasks = [
+  {
+    className: "Computer Architecture",
+    tasks: [
+      {
+        name: "Homework 1",
+        isComplete: false,
+        dueDate: new Date("2025-06-10"),
+      },
+      {
+        name: "Quiz 1",
+        isComplete: true,
+        dueDate: new Date("2025-06-05"),
+      },
+    ],
+  },
+  {
+    className: "Data Structures and Alg.",
+    tasks: [
+      {
+        name: "Essay Draft",
+        isComplete: false,
+        dueDate: new Date("2024-07-12"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2025-07-08"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2024-07-08"),
+      },
+    ],
+  },
+  {
+    className: "Software Engineering",
+    tasks: [
+      {
+        name: "Essay Draft",
+        isComplete: true,
+        dueDate: new Date("2024-06-12"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2025-07-08"),
+      },
+    ],
+  },
+  {
+    className: "Linear Algebra",
+    tasks: [
+      {
+        name: "Essay Draft",
+        isComplete: false,
+        dueDate: new Date("2025-06-12"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2025-06-08"),
+      },
+    ],
+  },
+  {
+    className: "UNIX Programming",
+    tasks: [
+      {
+        name: "Essay Draft",
+        isComplete: false,
+        dueDate: new Date("2024-07-12"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2025-07-08"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2025-06-08"),
+      },
+      {
+        name: "Reading Assignment",
+        isComplete: true,
+        dueDate: new Date("2024-06-08"),
+      },
+    ],
+  },
+];
+
 export default function Dashboard({ userData }: Props) {
   const navigate = useNavigate();
   const [userBankAccounts, setUserBankAccounts] = useState<
@@ -37,6 +130,10 @@ export default function Dashboard({ userData }: Props) {
 
   const handleAccount = () => {
     navigate("/Accounts");
+  };
+
+  const handleTasks = () => {
+    navigate("/Tasks");
   };
 
   useEffect(() => {
@@ -95,7 +192,10 @@ export default function Dashboard({ userData }: Props) {
                 .filter((account) => account.accountType === "Savings")
                 .slice(0, 2)
                 .map((account) => (
-                  <div key={account._id} className="bg-[#57C785]/60 border border-[#4CAF75]/43 rounded-2xl py-3 px-4 min-h-16">
+                  <div
+                    key={account._id}
+                    className="bg-[#57C785]/60 border border-[#4CAF75]/43 rounded-2xl py-3 px-4 min-h-16"
+                  >
                     <div className="mb-1">
                       <h3 className="text-sm font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
                         {account.accountName} ...1234
@@ -234,9 +334,73 @@ export default function Dashboard({ userData }: Props) {
           </h2>
         </div>
         <div className="bg-white rounded-lg shadow-sm px-3 pt-2 pb-1">
-          <h2 className="text-base font-bold text-[#3F3131] mb-2 font-(family-name:--font-IBMPlexSans) flex-shrink-0">
-            Tasks
-          </h2>
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-base font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans) flex-shrink-0">
+              All Tasks
+            </h2>
+            <button
+              onClick={() => handleTasks()}
+              className="cursor-pointer text-sm font-semibold text-[#3F3131] bg-[#F3F3F3] hover:bg-[#FCD34D] px-3 rounded-xl transition-colors duration-200 h-6 flex items-center"
+            >
+              View More
+            </button>
+          </div>
+          <div className="space-y-2 overflow-y-auto min-h-0 flex-1">
+            {(() => {
+              const allTasks = classTasks.flatMap((cls) =>
+                cls.tasks.map((task) => ({
+                  ...task,
+                  className: cls.className,
+                }))
+              );
+              const sortedTasks = allTasks
+                .sort(
+                  (a, b) =>
+                    new Date(a.dueDate).getTime() -
+                    new Date(b.dueDate).getTime()
+                )
+                .filter((task) => !task.isComplete)
+                .slice(0, 4);
+              if (sortedTasks.length === 0) {
+                return (
+                  <div className="flex items-center justify-center flex-1">
+                    <div className="border-dashed border-[#654545] py-6 px-8 rounded-4xl border-3">
+                      <p className="text-[#654545] text-lg font-bold font-(family-name:--font-IBMPlexSans)">
+                        No Pending Tasks
+                      </p>
+                    </div>
+                  </div>
+                );
+              }
+              return sortedTasks.map((task, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-[#F3F3F3] rounded-xl px-3 py-2"
+                >
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+                      {task.name}
+                    </span>
+                    <span className="text-xs text-[#654545] font-medium font-(family-name:--font-IBMPlexSans)">
+                      {task.className}
+                    </span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-xs text-[#3F3131] font-medium font-(family-name:--font-IBMPlexSans)">
+                      {task.dueDate.toLocaleDateString()}
+                    </span>
+                    <span
+                      className={`text-xs font-bold font-(family-name:--font-IBMPlexSans) ${
+                        task.isComplete ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {task.isComplete ? "Complete" : "Pending"}
+                    </span>
+                  </div>
+                </div>
+              ));
+            })()}
+          </div>
         </div>
       </div>
     </div>

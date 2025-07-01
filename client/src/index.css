@@ -80,6 +80,10 @@ html {
   .scrollbar-home {
     scrollbar-color: #ffffff #d3baba;
   }
+
+  .scrollbar-blue {
+    scrollbar-color: #535CFF #f3f4f6;
+  }
 }
 
 .light-cream-box {

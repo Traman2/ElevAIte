@@ -1,7 +1,7 @@
 export default function Footer() {
   return (
     <>
-      <footer id="Contact" className="bg-[#494343] rounded-t-4xl pt-29 pb-10">
+      <footer id="Contact" className="bg-[#494343] pt-29 pb-10">
         <div className="mx-auto max-w-[980px] px-4">
           <div className="flex items-start justify-between">
             <div className="flex items-center gap-3">

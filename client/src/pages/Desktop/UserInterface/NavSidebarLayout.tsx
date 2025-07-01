@@ -390,7 +390,7 @@ export default function NavSidebarLayout({ page }: Props) {
         </div>
 
         {/* Render Section */}
-        <div className="bg-[#F9F1F1] flex-1 px-4 py-3 rounded-br-lg shadow-sm">
+        <div className="bg-[#F9F1F1] flex-1 px-3 py-2 rounded-br-lg shadow-sm">
           {renderPage()}
         </div>
       </div>

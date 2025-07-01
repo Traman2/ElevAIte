@@ -64,7 +64,12 @@ export default function DesktopHome() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#EED2D2] overflow-x-hidden">
+    <div 
+      className="min-h-screen w-full overflow-x-hidden relative bg-cover bg-center bg-no-repeat bg-[url('/Tutt-Library-entrance-1920x1256.jpg')]"
+    >
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-[#EED2D2]/80"></div>
+      
       <nav
         className={`fixed left-1/2 top-7 transform -translate-x-1/2 z-50 transition-all duration-500 ${
           solid
@@ -124,7 +129,7 @@ export default function DesktopHome() {
       </nav>
       <div
         ref={scrollRef}
-        className="scrollbar-home overflow-y-auto max-h-[100vh] pt-[100px]"
+        className="scrollbar-home overflow-y-auto max-h-[100vh] pt-[100px] relative z-10"
       >
         <Hero handleClick={handleNavClick} />
         <HeroFeatureMiddleImage/>
