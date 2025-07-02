@@ -320,7 +320,7 @@ export default function NavSidebarLayout({ page }: Props) {
             </span>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3 pr-1">
             <button
               onClick={() => handleSearch()}
               className="font-semibold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#EAE3E3] hover:bg-gray-300 text-[#5C543C] px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"

@@ -8,6 +8,8 @@ import authRoutes from './routes/authRoutes.js'
 import bankAccountRoutes from './routes/bankAccountRoutes.js'
 import transactionRoutes from './routes/transactionRoutes.js'
 import internshipRoutes from './routes/internshipRoutes.js'
+import classRoutes from './routes/classRoutes.js'
+import taskRoutes from './routes/taskRoutes.js'
 
 
 dotenv.config();
@@ -27,6 +29,8 @@ app.use('/auth', authRoutes);
 app.use('/bankaccount', bankAccountRoutes);
 app.use('/transaction', transactionRoutes);
 app.use('/internship', internshipRoutes);
+app.use('/class', classRoutes);
+app.use('/task', taskRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}...`);
