@@ -285,9 +285,9 @@ export default function TransactionModal({
           </div>
 
           {isSuccess ? (
-            <div className="cursor-not-allowed w-full font-(family-name:--font-IBMPlexSans) bg-green-500 text-white font-semibold py-3 px-6 rounded-3xl shadow-md flex items-center justify-center">
+            <div className="cursor-not-allowed font-(family-name:--font-IBMPlexSans) bg-green-500 text-white font-semibold py-2 px-4 rounded-xl shadow-md flex items-center gap-2">
               <svg
-                className="w-5 h-5 mr-2"
+                className="w-5 h-5"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -300,11 +300,11 @@ export default function TransactionModal({
               Transaction Added Successfully!
             </div>
           ) : (
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-4">
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex-1 cursor-pointer bg-[#FCD34D] font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-3 px-6 rounded-3xl shadow-md hover:bg-[#F59E0B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="bg-[#FCD34D] font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-bold py-2 px-4 rounded-xl shadow-md hover:bg-[#F59E0B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isSubmitting ? (
                   <>
@@ -338,7 +338,7 @@ export default function TransactionModal({
                 type="button"
                 onClick={onClose}
                 disabled={isSubmitting}
-                className="flex-1 cursor-pointer bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-3 px-6 rounded-3xl shadow-md hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-sm bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>

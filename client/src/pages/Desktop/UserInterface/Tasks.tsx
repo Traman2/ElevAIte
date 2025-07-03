@@ -74,7 +74,7 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
         </button>
       </div>
 
-      <div className="grid grid-rows-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto h-full min-h-0 scrollbar-blue p-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto h-full min-h-0 scrollbar-blue p-1">
         {userClasses.map((classItem, idx) => {
           const classTasks = userTasks.filter(task => task.classId === classItem._id);
           const now = new Date();
