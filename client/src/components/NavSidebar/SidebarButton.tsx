@@ -65,31 +65,6 @@ export default function SidebarButtons({ activePage }: SidebarButtonProps) {
         </button>
 
         <button
-          onClick={() => navigate("/Accounts")}
-          className={`${
-            activePage === "Accounts" && "bg-[#FADEDE] shadow-sm"
-          } w-full flex items-center justify-between px-2 py-1.5 rounded-lg cursor-pointer hover:bg-[#FADEDE] transition-colors mt-1`}
-        >
-          <div className="flex items-center space-x-2">
-            <img
-              src="/icons/sidebar/carbon--financial-assets.svg"
-              alt="Assets"
-              className="w-6 h-6"
-            />
-            <span className="font-(family-name:--font-IBMPlexSans) text-[#605D5D] font-semibold text-sm">
-              Accounts
-            </span>
-          </div>
-          {activePage === "Accounts" && (
-            <img
-              src="/icons/sidebar/ic--sharp-arrow-right.svg"
-              alt="Active"
-              className="w-6 h-6"
-            />
-          )}
-        </button>
-
-        <button
           onClick={() => navigate("/Transactions")}
           className={`${
             activePage === "Transactions" && "bg-[#FADEDE] shadow-sm"

@@ -5,8 +5,10 @@ import downloadAllExcel from "../../../utils/TransactionExcel";
 
 interface Props {
   onAddTransaction: () => void;
+  onAddAccount: () => void;
   userData: UserData | null;
   onShowTransactionTable: (accountNumber: string) => void;
+  refreshKey: number;
 }
 
 interface UserBankAccount {
@@ -39,7 +41,7 @@ interface UserData {
   email: string;
 }
 
-export default function Transactions({ onAddTransaction, userData, onShowTransactionTable }: Props) {
+export default function Transactions({ onAddTransaction, userData, onShowTransactionTable, onAddAccount, refreshKey }: Props) {
   const [userBankAccounts, setUserBankAccounts] = useState<
     UserBankAccount[] | null
   >(null);
@@ -62,7 +64,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
     };
 
     fetchUserData();
-  }, [userData]);
+  }, [userData, refreshKey]);
 
   useEffect(() => {
     if (!userData) return;
@@ -78,7 +80,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
     };
 
     fetchUserTransactions();
-  }, [userData]);
+  }, [userData, refreshKey]);
 
   const formatCurrency = (amount: number): string => {
     return amount.toLocaleString("en-US", {
@@ -97,15 +99,17 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
           onClick={onAddTransaction}
           className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-4"
         >
-          Add
+          Add Transaction
+        </button>
+        <button
+        onClick={onAddAccount}
+          className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-2"
+        >
+          Create Account
         </button>
       </div>
 
-      <p className="font-medium text-[#3F3131] mb-5 font-(family-name:--font-IBMPlexSans)">
-        Credit Card Payment Due 1 Aug, 2025
-      </p>
-
-      <h2 className="text-xl font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans) mb-2">
+      <h2 className="text-xl mt-4 font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans) mb-2">
         Accounts
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-5">
@@ -156,7 +160,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
       </div>
       <div className="flex items-center justify-between mb-2">
         <h2 className="text-xl font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-          Recent Purchases
+          Recent History
         </h2>
         <button
           onClick={() => downloadAllExcel(userTransactions || [], userBankAccounts || [])}

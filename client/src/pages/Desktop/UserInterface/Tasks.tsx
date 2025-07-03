@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface ClassData {
   _id: string;
@@ -36,6 +36,8 @@ interface Props {
 export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
   const [userClasses, setUserClasses] = useState<ClassData[]>([]);
   const [userTasks, setUserTasks] = useState<TaskData[]>([]);
+  const [openMenuIdx, setOpenMenuIdx] = useState<number | null>(null);
+  const menuRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   useEffect(() => {
     if (!userData) return;
@@ -63,30 +65,47 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
       });
   }, [userData, refreshKey]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        openMenuIdx !== null &&
+        menuRefs.current[openMenuIdx] &&
+        !(menuRefs.current[openMenuIdx] as any).contains(event.target)
+      ) {
+        setOpenMenuIdx(null);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [openMenuIdx]);
+
   return (
     <div className="h-full min-h-0 flex flex-col">
       <div className="flex mb-4 px-1">
         <h1 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
           My Tasks
         </h1>
-        <button onClick={onAddClass} className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-4">
+        <button
+          onClick={onAddClass}
+          className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-4"
+        >
           Add Class
         </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto h-full min-h-0 scrollbar-blue p-1">
         {userClasses.map((classItem, idx) => {
-          const classTasks = userTasks.filter(task => task.classId === classItem._id);
+          const classTasks = userTasks.filter(
+            (task) => task.classId === classItem._id
+          );
           const now = new Date();
           const hasOverdue = classTasks.some(
             (task) => !task.isComplete && new Date(task.dueDate) < now
           );
-          const hasIncomplete = classTasks.some(
-            (task) => !task.isComplete
-          );
-          const allComplete = classTasks.length > 0 && classTasks.every(
-            (task) => task.isComplete
-          );
+          const hasIncomplete = classTasks.some((task) => !task.isComplete);
+          const allComplete =
+            classTasks.length > 0 &&
+            classTasks.every((task) => task.isComplete);
           const total = classTasks.length;
           const completed = classTasks.filter((t) => t.isComplete).length;
           const percent = total === 0 ? 0 : (completed / total) * 100;
@@ -104,20 +123,53 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                     No Tasks
                   </span>
                 </div>
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-2 relative">
                   <span
                     className="text-[17px] font-bold text-[#3F3131] truncate"
-                    style={{ fontFamily: 'IBM Plex Sans, sans-serif', maxWidth: '200px' }}
+                    style={{
+                      fontFamily: "IBM Plex Sans, sans-serif",
+                      maxWidth: "200px",
+                    }}
                     title={classItem.className}
                   >
                     {classItem.className}
                   </span>
-                  <button className="p-1 cursor-pointer hover:bg-gray-100 rounded-md transition-colors">
+                  <button
+                    ref={(el) => {
+                      menuRefs.current[idx] = el;
+                    }}
+                    className="p-1 cursor-pointer hover:bg-gray-100 rounded-md transition-colors relative"
+                    onClick={() =>
+                      setOpenMenuIdx(openMenuIdx === idx ? null : idx)
+                    }
+                  >
                     <img
                       src="/icons/tasks/pepicons-pop--dots-x.svg"
                       alt="More options"
                       className="w-6 h-6"
                     />
+                    {openMenuIdx === idx && (
+                      <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10">
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                          onClick={() => {
+                            setOpenMenuIdx(null);
+                            alert("Edit " + classItem._id);
+                          }}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+                          onClick={() => {
+                            setOpenMenuIdx(null);
+                            alert("Delete " + classItem._id);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    )}
                   </button>
                 </div>
                 <div className="flex flex-1 items-center justify-center">
@@ -162,24 +214,57 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                   </span>
                 )}
               </div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-2 relative">
                 <span
                   className="text-[17px] font-bold text-[#3F3131] truncate"
-                  style={{ fontFamily: 'IBM Plex Sans, sans-serif', maxWidth: '200px' }}
+                  style={{
+                    fontFamily: "IBM Plex Sans, sans-serif",
+                    maxWidth: "200px",
+                  }}
                   title={classItem.className}
                 >
                   {classItem.className}
                 </span>
-                <button className="p-1 cursor-pointer hover:bg-gray-100 rounded-md transition-colors">
+                <button
+                  ref={(el) => {
+                    menuRefs.current[idx] = el;
+                  }}
+                  className="p-1 cursor-pointer hover:bg-gray-100 rounded-md transition-colors relative"
+                  onClick={() =>
+                    setOpenMenuIdx(openMenuIdx === idx ? null : idx)
+                  }
+                >
                   <img
                     src="/icons/tasks/pepicons-pop--dots-x.svg"
                     alt="More options"
                     className="w-6 h-6"
                   />
+                  {openMenuIdx === idx && (
+                    <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10">
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        onClick={() => {
+                          setOpenMenuIdx(null);
+                          alert("Edit " + classItem._id);
+                        }}
+                      >
+                        Edit
+                      </button>
+                      <button
+                        className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+                        onClick={() => {
+                          setOpenMenuIdx(null);
+                          alert("Delete " + classItem._id);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </button>
               </div>
-              <div className="flex flex-col gap-2 mb-4">
-                {classTasks.slice(0, 3).map((task, tIdx, arr) => (
+              <div className="flex flex-col gap-2 mb-10">
+                {classTasks.map((task, tIdx, arr) => (
                   <div key={tIdx}>
                     <div className="flex items-start gap-3">
                       <button
@@ -227,11 +312,14 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                             alt="Due date"
                             className="w-4 h-4 mr-1"
                           />
-                          {new Date(task.dueDate).toLocaleDateString(undefined, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
+                          {new Date(task.dueDate).toLocaleDateString(
+                            undefined,
+                            {
+                              year: "numeric",
+                              month: "short",
+                              day: "numeric",
+                            }
+                          )}
                         </span>
                       </div>
                     </div>

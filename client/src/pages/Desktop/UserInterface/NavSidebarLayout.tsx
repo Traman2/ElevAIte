@@ -4,7 +4,6 @@ import axios from "axios";
 
 //Tabs
 import Dashboard from "./Dashboard";
-import Accounts from "./Accounts";
 import Transactions from "./Transactions";
 import InternshipManager from "./InternshipManager";
 import Tasks from "./Tasks";
@@ -70,6 +69,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [animateOut, setAnimateOut] = useState(false);
   const [internshipRefreshKey, setInternshipRefreshKey] = useState(0);
   const [taskRefreshKey, setTaskRefreshKey] = useState(0);
+  const [accountRefreshKey, setAccountRefreshKey] = useState(0);
 
   useEffect(() => {
     setActivePage(page);
@@ -213,13 +213,13 @@ export default function NavSidebarLayout({ page }: Props) {
     switch (activePage) {
       case "Dashboard":
         return <Dashboard userData={userData} />;
-      case "Accounts":
-        return <Accounts onAddAsset={handleAddAsset} userData={userData} />;
       case "Transactions":
         return (
           <Transactions
+            onAddAccount={handleAddAsset}
             onAddTransaction={handleAddTransaction}
             userData={userData}
+            refreshKey={accountRefreshKey}
             onShowTransactionTable={handleShowTransactionTable}
           />
         );
@@ -261,6 +261,7 @@ export default function NavSidebarLayout({ page }: Props) {
             onClose={handleCloseModal}
             userId={userData?._id}
             onAssetAdded={fetchTotalAssets}
+            onAssetRefresh={() => setAccountRefreshKey((k) => k + 1)}
           />
         );
       case "addTransaction":

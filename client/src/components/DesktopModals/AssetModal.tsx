@@ -30,9 +30,10 @@ interface AssetModalProps {
   onClose?: () => void;
   userId?: string;
   onAssetAdded?: () => void;
+  onAssetRefresh: () => void;
 }
 
-export default function AssetModal({ onClose, userId, onAssetAdded }: AssetModalProps) {
+export default function AssetModal({ onClose, userId, onAssetAdded, onAssetRefresh }: AssetModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
@@ -59,6 +60,7 @@ export default function AssetModal({ onClose, userId, onAssetAdded }: AssetModal
       .then(() => {
         setIsSuccess(true);
         if (onAssetAdded) onAssetAdded();
+        onAssetRefresh();
         setTimeout(() => {
           if (onClose) {
             onClose();
