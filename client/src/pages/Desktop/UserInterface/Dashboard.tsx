@@ -394,7 +394,7 @@ export default function Dashboard({ userData }: Props) {
                   </span>
                   <div className="flex-1 flex flex-col justify-end mt-2">
                     {internship.description && (
-                      <span className="text-xs text-[#654545] font-normal font-(family-name:--font-IBMPlexSans) break-words line-clamp-4 overflow-hidden">
+                      <span className="text-xs text-[#654545] font-normal font-(family-name:--font-IBMPlexSans) break-words line-clamp-6 overflow-hidden">
                         {internship.description}
                       </span>
                     )}

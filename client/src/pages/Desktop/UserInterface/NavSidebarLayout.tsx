@@ -22,6 +22,7 @@ import SearchModal from "../../../components/DesktopModals/SearchModal";
 import TransactionTableModal from "../../../components/DesktopModals/TransactionTableModal";
 import InternshipManagerModal from "../../../components/DesktopModals/InternshipManagerModal";
 import InternshipAddModal from "../../../components/DesktopModals/InternshipAddModal";
+import TaskModal from "../../../components/DesktopModals/TaskModal";
 
 interface Props {
   page: string;
@@ -68,6 +69,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [showModal, setShowModal] = useState(false);
   const [animateOut, setAnimateOut] = useState(false);
   const [internshipRefreshKey, setInternshipRefreshKey] = useState(0);
+  const [taskRefreshKey, setTaskRefreshKey] = useState(0);
 
   useEffect(() => {
     setActivePage(page);
@@ -114,6 +116,14 @@ export default function NavSidebarLayout({ page }: Props) {
       isOpen: true,
       type: "addInternship",
       title: "Add Internship",
+    });
+  };
+
+  const handleAddTask = () => {
+    setModalState({
+      isOpen: true,
+      type: "addTask",
+      title: "Add Task",
     });
   };
 
@@ -224,7 +234,13 @@ export default function NavSidebarLayout({ page }: Props) {
         );
 
       case "Tasks":
-        return <Tasks />;
+        return (
+          <Tasks
+            userData={userData}
+            onAddClass={handleAddTask}
+            refreshKey={taskRefreshKey}
+          />
+        );
       case "Calendar":
         return <Calendar />;
       case "Security":
@@ -256,7 +272,7 @@ export default function NavSidebarLayout({ page }: Props) {
           />
         );
       case "search":
-        return <SearchModal />;
+        return <SearchModal onClose={handleCloseModal}/>;
       case "transactionTable":
         return transactionAccountNumber ? (
           <TransactionTableModal
@@ -278,6 +294,14 @@ export default function NavSidebarLayout({ page }: Props) {
             onClose={handleCloseModal}
             userId={userData?._id}
             onInternshipAdded={() => setInternshipRefreshKey((k) => k + 1)}
+          />
+        );
+      case "addTask":
+        return (
+          <TaskModal
+            onClose={handleCloseModal}
+            userId={userData?._id}
+            onTaskAdded={() => setTaskRefreshKey((k) => k + 1)}
           />
         );
       default:
@@ -361,9 +385,9 @@ export default function NavSidebarLayout({ page }: Props) {
               {formatCurrency(totalAssets)}
             </p>
           </div>
-          
+
           {/* Buttons */}
-          <SidebarButtons activePage={activePage}/>
+          <SidebarButtons activePage={activePage} />
 
           <div className="mt-auto mb-2">
             <div className="bg-[#E7D7D7] rounded-2xl px-2 py-1.5">

@@ -193,6 +193,17 @@ export default function Signup() {
                 </p>
               )}
             </div>
+            <div className="flex justify-center mt-2">
+              <span className="text-sm font-(family-name:--font-IBMPlexSans) text-[#5C543C]">
+                {"Already have an Account? "}
+                <span
+                  className="underline cursor-pointer font-bold hover:text-[#0c4626]"
+                  onClick={() => navigate('/Login')}
+                >
+                  Login
+                </span>
+              </span>
+            </div>
             <div className="flex justify-center mt-4">
               <button
                 type="submit"

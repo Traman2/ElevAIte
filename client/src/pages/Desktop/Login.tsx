@@ -141,6 +141,18 @@ export default function Login() {
             </div>
 
             <div className="flex justify-center">
+              <span className="text-sm font-(family-name:--font-IBMPlexSans) text-[#5C543C]">
+                {"Don't have an Account? "}
+                <span
+                  className="underline cursor-pointer font-bold hover:text-[#0c4626]"
+                  onClick={() => navigate('/Signup')}
+                >
+                  Sign Up
+                </span>
+              </span>
+            </div>
+
+            <div className="flex justify-center">
               <button
                 type="submit"
                 className="font-(family-name:--font-IBMPlexSans) cursor-pointer flex item-center py-3 px-7 border border-transparent rounded-3xl shadow-sm font-bold text-gray-800 bg-[#FCD34D] hover:bg-yellow-400"
