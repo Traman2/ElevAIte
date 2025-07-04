@@ -22,6 +22,7 @@ import TransactionTableModal from "../../../components/DesktopModals/Transaction
 import InternshipManagerModal from "../../../components/DesktopModals/InternshipManagerModal";
 import InternshipAddModal from "../../../components/DesktopModals/InternshipAddModal";
 import TaskModal from "../../../components/DesktopModals/TaskModal";
+import AddNewTaskModal from "../../../components/DesktopModals/AddNewTaskModal";
 
 interface Props {
   page: string;
@@ -61,6 +62,9 @@ export default function NavSidebarLayout({ page }: Props) {
 
   //Pass through values for modal
   const [transactionAccountNumber, setTransactionAccountNumber] = useState<
+    string | null
+  >(null);
+  const [classIdForTask, setClassId] = useState<
     string | null
   >(null);
   const [viewApplication, setViewApplication] =
@@ -135,6 +139,16 @@ export default function NavSidebarLayout({ page }: Props) {
     });
   };
 
+  const handleAddNewTask = (classId: string) => {
+    setClassId(classId);
+    setModalState({
+      isOpen: true,
+      type: "addNewTask",
+      title: "Add New Task",
+    });
+  };
+
+
   const handleShowTransactionTable = (accountNumber: string) => {
     setTransactionAccountNumber(accountNumber);
     setModalState({
@@ -152,6 +166,7 @@ export default function NavSidebarLayout({ page }: Props) {
     });
     setTransactionAccountNumber(null);
     setViewApplication(null);
+    setClassId(null);
   };
 
   //Decrypt user data from jwt
@@ -239,6 +254,7 @@ export default function NavSidebarLayout({ page }: Props) {
             userData={userData}
             onAddClass={handleAddTask}
             refreshKey={taskRefreshKey}
+            addNewTask={handleAddNewTask}
           />
         );
       case "Calendar":
@@ -305,6 +321,15 @@ export default function NavSidebarLayout({ page }: Props) {
             onTaskAdded={() => setTaskRefreshKey((k) => k + 1)}
           />
         );
+      case "addNewTask":
+        return (
+          <AddNewTaskModal 
+            onClose={handleCloseModal} 
+            classId={classIdForTask? classIdForTask : ""}
+            onTaskAdded={() => setTaskRefreshKey((k) => k + 1)}
+            userId={userData?._id}
+          />
+        )
       default:
         return null;
     }

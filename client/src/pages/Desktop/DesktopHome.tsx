@@ -68,7 +68,7 @@ export default function DesktopHome() {
       className="min-h-screen w-full overflow-x-hidden relative bg-cover bg-center bg-no-repeat bg-[url('/Tutt-Library-entrance-1920x1256.jpg')]"
     >
       {/* Overlay */}
-      <div className="absolute inset-0 bg-[#EED2D2]/80"></div>
+      <div className="absolute inset-0 bg-[#EED2D2]/90"></div>
       
       <nav
         className={`fixed left-1/2 top-7 transform -translate-x-1/2 z-50 transition-all duration-500 ${

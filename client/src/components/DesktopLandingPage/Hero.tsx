@@ -19,8 +19,8 @@ export default function Hero({handleClick} : Props) {
             className="text-center text-6xl font-bold font-(family-name:--font-IBMPlexMono) leading-tight"
             style={{ color: "#000000" }}
           >
-            Organize your <span className="text-[#ffc609]">Schedule</span> and{" "}
-            <span className="text-[#ffc609]">Budget</span> with confidence
+            Organize your <span className="text-[#e2fa0b]">Schedule</span> and{" "}
+            <span className="text-[#e2fa0b]">Budget</span> with confidence
           </h1>
           <p
             className="mt-6 font-bold text-center text-xl font-(family-name:--font-IBMPlexSans) max-w-[500px] mx-auto"
