@@ -38,6 +38,8 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
   const [userTasks, setUserTasks] = useState<TaskData[]>([]);
   const [openMenuIdx, setOpenMenuIdx] = useState<number | null>(null);
   const menuRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const [editingClassId, setEditingClassId] = useState<string | null>(null);
+  const [editingClassName, setEditingClassName] = useState<string>("");
 
   useEffect(() => {
     if (!userData) return;
@@ -78,6 +80,52 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openMenuIdx]);
+
+  // Function to handle class deletion
+  const handleDeleteClass = (classId: string) => {
+    setOpenMenuIdx(null);
+    axios
+      .delete(`http://localhost:3000/class/${classId}`)
+      .then(async () => {
+        if (userData) {
+          const classRes = await axios.get(`http://localhost:3000/class/user/${userData._id}`);
+          setUserClasses(classRes.data);
+          const taskPromises = classRes.data.map((classItem: ClassData) =>
+            axios.get(`http://localhost:3000/task/class/${classItem._id}`)
+          );
+          const taskResponses = await Promise.all(taskPromises);
+          const allTasks = taskResponses.flatMap((res) => res.data);
+          setUserTasks(allTasks);
+        }
+      })
+      .catch((err) => {
+        alert("Failed to delete class");
+        console.error(err);
+      });
+  };
+
+  const handleEditClass = (classItem: ClassData) => {
+    setEditingClassId(classItem._id);
+    setEditingClassName(classItem.className);
+    setOpenMenuIdx(null);
+  };
+
+  const handleSaveEdit = (classId: string) => {
+    axios
+      .patch(`http://localhost:3000/class/${classId}`, { className: editingClassName })
+      .then(async () => {
+        setEditingClassId(null);
+        setEditingClassName("");
+        if (userData) {
+          const classRes = await axios.get(`http://localhost:3000/class/user/${userData._id}`);
+          setUserClasses(classRes.data);
+        }
+      })
+      .catch((err) => {
+        alert("Failed to update class");
+        console.error(err);
+      });
+  };
 
   return (
     <div className="h-full min-h-0 flex flex-col">
@@ -124,16 +172,35 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                   </span>
                 </div>
                 <div className="flex items-center justify-between mb-2 relative">
-                  <span
-                    className="text-[17px] font-bold text-[#3F3131] truncate"
+                  <div
+                    className="text-[17px] font-bold text-[#3F3131] truncate flex items-center"
                     style={{
                       fontFamily: "IBM Plex Sans, sans-serif",
-                      maxWidth: "200px",
-                    }}
+                      maxWidth: "200px" }}
                     title={classItem.className}
                   >
-                    {classItem.className}
-                  </span>
+                    {editingClassId === classItem._id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editingClassName}
+                          onChange={e => setEditingClassName(e.target.value)}
+                          className="border rounded px-1 py-0.5 text-[15px] font-normal text-[#3F3131]"
+                          style={{ fontFamily: "IBM Plex Sans, sans-serif", maxWidth: "140px" }}
+                          autoFocus
+                        />
+                        <button
+                          className=" cursor-pointer ml-2 px-2 py-0.5 bg-green-500 text-white rounded text-xs align-middle"
+                          style={{ height: '28px', minHeight: '28px' }}
+                          onClick={() => handleSaveEdit(classItem._id)}
+                        >
+                          Save
+                        </button>
+                      </>
+                    ) : (
+                      classItem.className
+                    )}
+                  </div>
                   <button
                     ref={(el) => {
                       menuRefs.current[idx] = el;
@@ -152,19 +219,13 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                       <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10">
                         <button
                           className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                          onClick={() => {
-                            setOpenMenuIdx(null);
-                            alert("Edit " + classItem._id);
-                          }}
+                          onClick={() => handleEditClass(classItem)}
                         >
                           Edit
                         </button>
                         <button
                           className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
-                          onClick={() => {
-                            setOpenMenuIdx(null);
-                            alert("Delete " + classItem._id);
-                          }}
+                          onClick={() => handleDeleteClass(classItem._id)}
                         >
                           Delete
                         </button>
@@ -215,16 +276,35 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                 )}
               </div>
               <div className="flex items-center justify-between mb-2 relative">
-                <span
-                  className="text-[17px] font-bold text-[#3F3131] truncate"
+                <div
+                  className="text-[17px] font-bold text-[#3F3131] truncate flex items-center"
                   style={{
                     fontFamily: "IBM Plex Sans, sans-serif",
-                    maxWidth: "200px",
-                  }}
+                    maxWidth: "200px" }}
                   title={classItem.className}
                 >
-                  {classItem.className}
-                </span>
+                  {editingClassId === classItem._id ? (
+                    <>
+                      <input
+                        type="text"
+                        value={editingClassName}
+                        onChange={e => setEditingClassName(e.target.value)}
+                        className="border rounded px-1 py-0.5 text-[15px] font-normal text-[#3F3131]"
+                        style={{ fontFamily: "IBM Plex Sans, sans-serif", maxWidth: "140px" }}
+                        autoFocus
+                      />
+                      <button
+                        className="cursor-pointer ml-2 px-2 py-0.5 bg-green-500 text-white rounded text-xs align-middle"
+                        style={{ height: '28px', minHeight: '28px' }}
+                        onClick={() => handleSaveEdit(classItem._id)}
+                      >
+                        Save
+                      </button>
+                    </>
+                  ) : (
+                    classItem.className
+                  )}
+                </div>
                 <button
                   ref={(el) => {
                     menuRefs.current[idx] = el;
@@ -243,19 +323,13 @@ export default function Tasks({ userData, onAddClass, refreshKey }: Props) {
                     <div className="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded shadow-lg z-10">
                       <button
                         className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
-                        onClick={() => {
-                          setOpenMenuIdx(null);
-                          alert("Edit " + classItem._id);
-                        }}
+                        onClick={() => handleEditClass(classItem)}
                       >
                         Edit
                       </button>
                       <button
                         className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-100"
-                        onClick={() => {
-                          setOpenMenuIdx(null);
-                          alert("Delete " + classItem._id);
-                        }}
+                        onClick={() => handleDeleteClass(classItem._id)}
                       >
                         Delete
                       </button>
