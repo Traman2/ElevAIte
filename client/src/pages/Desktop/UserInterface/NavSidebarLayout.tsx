@@ -205,6 +205,7 @@ export default function NavSidebarLayout({ page }: Props) {
               0
             ) || 0;
         setTotalAssets(total);
+        setAccountRefreshKey((k) => k + 1)
       })
       .catch((err) => {
         setTotalAssets(0);

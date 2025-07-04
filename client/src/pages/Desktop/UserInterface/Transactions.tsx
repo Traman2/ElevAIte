@@ -174,6 +174,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
         <table className="w-full bg-white shadow-lg">
           <thead className="sticky top-0 z-10 bg-[#EED2D2] text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
             <tr>
+              <th className="py-3 px-4 text-left font-semibold">Date</th>
               <th className="py-3 px-4 text-left font-semibold">Account</th>
               <th className="py-3 px-4 text-left font-semibold">Name</th>
               <th className="py-3 px-4 text-left font-semibold">Category</th>
@@ -191,6 +192,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
                 .slice(0, 5)
                 .map((transactions) => (
                   <tr className="border-b border-[#F4D5D5] last:border-b-0 transition-colors bg-white" key={transactions._id}>
+                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{new Date(transactions.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</td>
                     <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.accountName}</td>
                     <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.transactionName}</td>
                     <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{transactions.category}</td>
@@ -198,7 +200,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
                   </tr>
                 ))
             ) : (
-              <tr><td colSpan={4} className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)">No transactions found</td></tr>
+              <tr><td colSpan={5} className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)">No transactions found</td></tr>
             )}
           </tbody>
         </table>
