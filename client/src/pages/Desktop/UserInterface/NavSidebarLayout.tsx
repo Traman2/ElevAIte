@@ -74,6 +74,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [internshipRefreshKey, setInternshipRefreshKey] = useState(0);
   const [taskRefreshKey, setTaskRefreshKey] = useState(0);
   const [accountRefreshKey, setAccountRefreshKey] = useState(0);
+  const [showAssets, setShowAssets] = useState(false);
 
   useEffect(() => {
     setActivePage(page);
@@ -83,10 +84,6 @@ export default function NavSidebarLayout({ page }: Props) {
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/");
-  };
-
-  const handleAssets = () => {
-    navigate("/Accounts");
   };
 
   //Modal Handlers (Passes these into panel components)
@@ -402,15 +399,28 @@ export default function NavSidebarLayout({ page }: Props) {
       <div className="flex mx-2 mt-1 mb-2 gap-1 flex-1 min-h-0">
         <div className="bg-[#F9F1F1] w-60 px-3 py-2 rounded-bl-lg shadow-sm flex flex-col">
           <div
-            onClick={() => handleAssets()}
-            className="cursor-pointer shadow-sm bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3"
+            className="shadow-sm bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3"
           >
             <p className="text-[#3F3131] text-xs font-medium font-(family-name:--font-IBMPlexSans)">
               Total Assets
             </p>
-            <p className="text-[#3F3131] text-xl font-semibold font-(family-name:--font-IBMPlexSans)">
-              {formatCurrency(totalAssets)}
-            </p>
+            <div className="flex items-center space-x-2">
+              <p className="text-[#3F3131] text-xl font-semibold font-(family-name:--font-IBMPlexSans)">
+                {showAssets ? formatCurrency(totalAssets) : "$****.**"}
+              </p>
+              <button
+                type="button"
+                className="focus:outline-none cursor-pointer"
+                onClick={e => { e.stopPropagation(); setShowAssets((v) => !v); }}
+                aria-label={showAssets ? "Hide assets" : "Show assets"}
+              >
+                <img
+                  src="/icons/sidebar/mdi--eye.svg"
+                  alt={showAssets ? "Hide" : "Show"}
+                  className="w-5 h-5 opacity-70 hover:opacity-100 transition-opacity duration-150"
+                />
+              </button>
+            </div>
           </div>
 
           {/* Buttons */}
