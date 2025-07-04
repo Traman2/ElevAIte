@@ -113,16 +113,16 @@ export default function TransactionModal({
 
   return (
     <>
-      <div className="bg-[#E7D7D7] rounded-lg p-8 shadow-lg w-[500px]">
-        <h2 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexMono) mb-4">
+      <div className="bg-white rounded-xl shadow p-6 w-[500px] flex flex-col gap-4" style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}>
+        <h2 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexMono) mb-2">
           Create New Transaction
         </h2>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <div>
             <label
               htmlFor="accountNumber"
-              className="block text-sm font-medium text-[#3F3131] mb-2"
+              className="block mb-1 text-[17px] font-bold text-[#3F3131]"
             >
               Select Account:
             </label>
@@ -133,7 +133,7 @@ export default function TransactionModal({
                 readOnly
                 value={selectedAccount ? selectedAccount.accountName : ""}
                 placeholder="Choose an account"
-                className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed bg-white cursor-pointer"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] bg-gray-100 text-[#3F3131] font-semibold text-[16px] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                 onClick={() => setShowDropdown((prev) => !prev)}
                 disabled={isSubmitting || isSuccess}
                 tabIndex={0}
@@ -185,7 +185,7 @@ export default function TransactionModal({
           <div>
             <label
               htmlFor="transactionName"
-              className="block text-sm font-medium text-[#3F3131] mb-2"
+              className="block mb-1 text-[17px] font-bold text-[#3F3131]"
             >
               Transaction Name:
             </label>
@@ -195,7 +195,7 @@ export default function TransactionModal({
               autoComplete="off"
               maxLength={20}
               {...register("transactionName")}
-              className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-[#3F3131] font-semibold text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D] disabled:opacity-50 disabled:cursor-not-allowed"
               placeholder="Enter transaction name"
               disabled={isSubmitting || isSuccess}
             />
@@ -206,7 +206,7 @@ export default function TransactionModal({
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-[#3F3131] mb-3">
+            <label className="block text-[17px] font-bold text-[#3F3131] mb-3">
               Category
             </label>
             <div className="flex gap-1">
@@ -221,11 +221,11 @@ export default function TransactionModal({
                   />
                   <div
                     className={`
-                    px-4 py-2 rounded-3xl border-2 cursor-pointer transition-all
+                    px-4 py-2 rounded-xl border-2 cursor-pointer transition-all
                     ${
                       selectedCategory === type
                         ? "bg-[#FCD34D] border-[#FCD34D] text-[#3F3131]"
-                        : "bg-white border-gray-300 text-gray-600 hover:border-[#FCD34D]"
+                        : "bg-gray-100 border-gray-300 text-gray-600 hover:border-[#FCD34D]"
                     }
                     ${
                       isSubmitting || isSuccess
@@ -248,7 +248,7 @@ export default function TransactionModal({
           <div>
             <label
               htmlFor="amount"
-              className="block text-sm font-medium text-[#3F3131] mb-2"
+              className="block mb-1 text-[17px] font-bold text-[#3F3131]"
             >
               Amount:
             </label>
@@ -260,7 +260,7 @@ export default function TransactionModal({
                 step="0.01"
                 min="0"
                 {...register("amount")}
-                className="w-full px-3 py-2 border border-[#B8ABAB] rounded-3xl focus:outline-none focus:ring-2 focus:ring-[#FCD34D] focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed no-spinner"
+                className="w-full px-4 py-2 border border-gray-300 rounded-xl bg-gray-100 text-[#3F3131] font-semibold text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D] disabled:opacity-50 disabled:cursor-not-allowed no-spinner"
                 placeholder="0.00"
                 disabled={isSubmitting || isSuccess}
                 autoComplete="off"

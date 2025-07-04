@@ -41,10 +41,26 @@ const deleteInternship = async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-} 
+}
+
+// Update internship by id
+const updateInternship = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body;
+    const internship = await Internship.findByIdAndUpdate(id, updates, { new: true });
+    if (!internship) {
+      return res.status(404).json({ message: 'Internship not found' });
+    }
+    res.json(internship);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+}
 
 export {
     createInternship,
     getUserInternships,
-    deleteInternship
+    deleteInternship,
+    updateInternship
 }

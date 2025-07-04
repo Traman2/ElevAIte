@@ -30,8 +30,8 @@ const getClassTasks = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, isComplete, dueDate } = req.body;
-    const updated = await TaskModel.findByIdAndUpdate(id, { name, isComplete, dueDate }, { new: true });
+    const updates = req.body;
+    const updated = await TaskModel.findByIdAndUpdate(id, updates, { new: true });
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });

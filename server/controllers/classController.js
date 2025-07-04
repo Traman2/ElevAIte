@@ -30,8 +30,8 @@ const getUserClasses = async (req, res) => {
 const updateClass = async (req, res) => {
   try {
     const { id } = req.params;
-    const { className } = req.body;
-    const updated = await ClassModel.findByIdAndUpdate(id, { className }, { new: true });
+    const updates = req.body;
+    const updated = await ClassModel.findByIdAndUpdate(id, updates, { new: true });
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });

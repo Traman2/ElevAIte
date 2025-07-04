@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 
 const statusColors: Record<string, string> = {
@@ -30,6 +30,10 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
   const [internships, setInternships] = useState<InternshipData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [statusEditId, setStatusEditId] = useState<string | null>(null);
+  const [statusUpdating, setStatusUpdating] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const statusDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!userId) return;
@@ -46,7 +50,47 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
         console.error("404 error", err)
         setLoading(false);
       });
-  }, [userId, refreshKey]);
+  }, [userId, refreshKey, statusUpdating]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        statusDropdownRef.current &&
+        !statusDropdownRef.current.contains(event.target as Node)
+      ) {
+        setStatusEditId(null);
+      }
+    }
+    if (statusEditId) {
+      document.addEventListener("click", handleClickOutside);
+    } else {
+      document.removeEventListener("click", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [statusEditId]);
+
+  const handleStatusClick = (id: string) => {
+    setStatusError(null);
+    setStatusEditId(prev => (prev === id ? null : id));
+  };
+
+  const handleStatusChange = (id: string, newStatus: string) => {
+    setStatusUpdating(id);
+    setStatusError(null);
+    axios
+      .patch(`http://localhost:3000/internship/${id}`, { status: newStatus })
+      .then(() => {
+        setStatusEditId(null);
+        setStatusUpdating(null);
+      })
+      .catch((err) => {
+        setStatusError("Failed to update status");
+        setStatusUpdating(null);
+        console.error("Error updating status:", err);
+      });
+  };
 
   return (
     <>
@@ -102,7 +146,7 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
                 {internships.map((app, idx) => (
                   <tr
                     key={idx}
-                    className="border-b border-[#F4D5D5] last:border-b-0 hover:bg-[#FADEDE]/60 transition-colors cursor-pointer"
+                    className="border-b border-[#F4D5D5] last:border-b-0 hover:bg-[#FADEDE]/60 transition-colors"
                     onClick={() => onApplicationClick(app)}
                   >
                     <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
@@ -118,11 +162,47 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
                       {app.employer}
                     </td>
                     <td className="py-3 px-4">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full border text-xs font-bold font-(family-name:--font-IBMPlexSans) ${statusColors[app.status]}`}
-                      >
-                        {app.status}
-                      </span>
+                      <div className="relative inline-block">
+                        <span
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full border text-xs font-bold font-(family-name:--font-IBMPlexSans) ${statusColors[app.status]} cursor-pointer`}
+                          onClick={e => { e.stopPropagation(); handleStatusClick(app._id); }}
+                        >
+                          <span>{app.status}</span>
+                          <svg
+                            className={`w-4 h-4 transition-transform duration-200 ${statusEditId === app._id ? 'rotate-180' : ''}`}
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </span>
+                        {statusEditId === app._id && (
+                          <div
+                            ref={statusDropdownRef}
+                            className="absolute z-20 left-0 top-full mt-2 bg-white border rounded shadow-lg min-w-[120px]"
+                            style={{ minWidth: 120 }}
+                          >
+                            {["Accepted", "Pending", "Reviewed", "Rejected"].map(option => (
+                              <div
+                                key={option}
+                                className={`px-4 py-2 cursor-pointer hover:bg-gray-100 text-sm ${option === app.status ? "font-bold text-green-700" : ""}`}
+                                onClick={e => { e.stopPropagation(); handleStatusChange(app._id, option); }}
+                              >
+                                {option}
+                              </div>
+                            ))}
+                            {statusUpdating === app._id && (
+                              <div className="px-4 py-2 text-xs text-gray-500">Updating...</div>
+                            )}
+                            {statusError && (
+                              <div className="px-4 py-2 text-xs text-red-500">{statusError}</div>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
