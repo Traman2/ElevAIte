@@ -1,6 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
+import {
+  type ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 
 interface UserData {
   _id: string;
@@ -36,98 +46,27 @@ interface Internship {
   userId: string;
 }
 
-const classTasks = [
-  {
-    className: "Computer Architecture",
-    tasks: [
-      {
-        name: "Homework 1",
-        isComplete: false,
-        dueDate: new Date("2025-06-10"),
-      },
-      {
-        name: "Quiz 1",
-        isComplete: true,
-        dueDate: new Date("2025-06-05"),
-      },
-    ],
-  },
-  {
-    className: "Data Structures and Alg.",
-    tasks: [
-      {
-        name: "Essay Draft",
-        isComplete: false,
-        dueDate: new Date("2024-07-12"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2025-07-08"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2024-07-08"),
-      },
-    ],
-  },
-  {
-    className: "Software Engineering",
-    tasks: [
-      {
-        name: "Essay Draft",
-        isComplete: true,
-        dueDate: new Date("2024-06-12"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2025-07-08"),
-      },
-    ],
-  },
-  {
-    className: "Linear Algebra",
-    tasks: [
-      {
-        name: "Essay Draft",
-        isComplete: false,
-        dueDate: new Date("2025-06-12"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2025-06-08"),
-      },
-    ],
-  },
-  {
-    className: "UNIX Programming",
-    tasks: [
-      {
-        name: "Essay Draft",
-        isComplete: false,
-        dueDate: new Date("2024-07-12"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2025-07-08"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2025-06-08"),
-      },
-      {
-        name: "Reading Assignment",
-        isComplete: true,
-        dueDate: new Date("2024-06-08"),
-      },
-    ],
-  },
-];
+interface ClassData {
+  _id: string;
+  className: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+interface TaskData {
+  _id: string;
+  name: string;
+  isComplete: boolean;
+  dueDate: Date;
+  classId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function getTruncatedTaskName(name: string) {
+  return name.length > 20 ? name.slice(0, 20) + '...' : name;
+}
 
 const statusColors: Record<string, string> = {
   Accepted: "bg-green-200 text-green-800 border-green-400",
@@ -136,19 +75,26 @@ const statusColors: Record<string, string> = {
   Rejected: "bg-red-100 text-red-800 border-red-400",
 };
 
+// ChartLegendRenderer is needed to avoid ref type issues with inline functions in Recharts Legend
+function ChartLegendRenderer(props: any) {
+  return <ChartLegendContent {...props} />;
+}
+
 export default function Dashboard({ userData }: Props) {
   const navigate = useNavigate();
   const [userBankAccounts, setUserBankAccounts] = useState<
     UserBankAccount[] | null
   >(null);
   const [internships, setInternships] = useState<Internship[] | null>(null);
+  const [userClasses, setUserClasses] = useState<ClassData[]>([]);
+  const [userTasks, setUserTasks] = useState<TaskData[]>([]);
 
   const handleTransactions = () => {
     navigate("/Transactions");
   };
 
   const handleAccount = () => {
-    navigate("/Accounts");
+    navigate("/Transactions");
   };
 
   const handleTasks = () => {
@@ -158,6 +104,29 @@ export default function Dashboard({ userData }: Props) {
   const handleInternships = () => {
     navigate("/InternshipManager");
   };
+
+  useEffect(() => {
+    if (!userData) return;
+    axios
+      .get(`http://localhost:3000/class/user/${userData._id}`)
+      .then((classRes) => {
+        setUserClasses(classRes.data);
+        const taskPromises = classRes.data.map((classItem: ClassData) =>
+          axios.get(`http://localhost:3000/task/class/${classItem._id}`)
+        );
+        Promise.all(taskPromises)
+          .then((taskResponses) => {
+            const allTasks = taskResponses.flatMap((res) => res.data);
+            setUserTasks(allTasks);
+          })
+          .catch((err) => {
+            console.error("Error fetching tasks:", err);
+          });
+      })
+      .catch((err) => {
+        console.error("Error fetching user classes:", err);
+      });
+  }, [userData]);
 
   useEffect(() => {
     if (!userData) return;
@@ -191,6 +160,28 @@ export default function Dashboard({ userData }: Props) {
       currency: "USD",
     });
   };
+
+  const assignmentsChartData = userClasses.map((cls) => {
+    const classTasks = userTasks.filter((task) => task.classId === cls._id);
+    const completed = classTasks.filter((task) => task.isComplete).length;
+    const pending = classTasks.filter((task) => !task.isComplete).length;
+    return {
+      className: cls.className,
+      completed,
+      pending,
+    };
+  });
+
+  const assignmentsChartConfig = {
+    completed: {
+      label: "Completed",
+      color: "#22c55e", // green
+    },
+    pending: {
+      label: "Pending",
+      color: "#ef4444", // red
+    },
+  } satisfies ChartConfig;
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -286,16 +277,31 @@ export default function Dashboard({ userData }: Props) {
         </div>
         <div className="bg-white rounded-lg shadow-sm col-span-2 px-3 pt-2 pb-1 flex flex-col">
           <h2 className="text-base font-bold text-[#3F3131] mb-2 font-(family-name:--font-IBMPlexSans) flex-shrink-0">
-            Daily Spending to Earning Ratio
+            Assignments Breakdown
           </h2>
 
-          <div className="flex items-center justify-center flex-1">
-            <div className="border-dashed border-[#654545] py-10 px-15 rounded-4xl border-3">
-              <p className="text-[#654545] text-2xl font-bold font-(family-name:--font-IBMPlexSans)">
-                Graph Coming Soon
-              </p>
-            </div>
-          </div>
+          <ChartContainer config={assignmentsChartConfig} className="min-h-[200px] p-2 w-full">
+            <BarChart accessibilityLayer data={assignmentsChartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="className"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.length > 10 ? value.slice(0, 10) + '…' : value}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
+              <Bar dataKey="pending" fill="var(--color-pending)" radius={4} />
+              <ChartLegend
+                content={ChartLegendRenderer}
+                layout="horizontal"
+                align="center"
+                verticalAlign="bottom"
+                iconType="square"
+              />
+            </BarChart>
+          </ChartContainer>
         </div>
         <div className="bg-white rounded-lg shadow-sm px-3 pt-2 pb-1 flex flex-col min-h-0 overflow-hidden">
           <div className="flex items-center justify-between mb-2">
@@ -435,62 +441,51 @@ export default function Dashboard({ userData }: Props) {
               View More
             </button>
           </div>
-          <div className="grid grid-rows-4 grid-cols-1 gap-3 overflow-y-auto min-h-0 flex-1 h-full">
-            {(() => {
-              const allTasks = classTasks.flatMap((cls) =>
-                cls.tasks.map((task) => ({
-                  ...task,
-                  className: cls.className,
-                }))
-              );
-              const sortedTasks = allTasks
-                .sort(
-                  (a, b) =>
-                    new Date(a.dueDate).getTime() -
-                    new Date(b.dueDate).getTime()
-                )
-                .filter((task) => !task.isComplete)
-                .slice(0, 4);
-              if (sortedTasks.length === 0) {
-                return (
-                  <div className="flex items-center justify-center flex-1">
-                    <div className="border-dashed border-[#654545] py-6 px-8 rounded-4xl border-3">
-                      <p className="text-[#654545] text-lg font-bold font-(family-name:--font-IBMPlexSans)">
-                        No Pending Tasks
-                      </p>
-                    </div>
-                  </div>
-                );
-              }
-              return sortedTasks.map((task, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between bg-[#F3F3F3] rounded-xl px-3 py-2 border border-[#E5E7EB] row-span-1"
-                >
-                  <div className="flex flex-col">
-                    <span className="text-sm font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                      {task.name}
-                    </span>
-                    <span className="text-xs text-[#654545] font-medium font-(family-name:--font-IBMPlexSans)">
-                      {task.className}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className="text-xs text-[#3F3131] font-medium font-(family-name:--font-IBMPlexSans)">
-                      {task.dueDate.toLocaleDateString()}
-                    </span>
-                    <span
-                      className={`text-xs font-bold font-(family-name:--font-IBMPlexSans) ${
-                        task.isComplete ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {task.isComplete ? "Complete" : "Pending"}
-                    </span>
+          {(() => {
+            const allTasks = userTasks
+              .sort(
+                (a, b) =>
+                  new Date(a.dueDate).getTime() -
+                  new Date(b.dueDate).getTime()
+              )
+              .filter((task) => !task.isComplete)
+              .slice(0, 4);
+            if (allTasks.length === 0) {
+              return (
+                <div className="flex flex-1 h-full items-center justify-center">
+                  <div className="border-dashed border-[#654545] py-6 px-8 rounded-4xl border-3">
+                    <p className="text-[#654545] text-lg font-bold font-(family-name:--font-IBMPlexSans)">
+                      No Pending Tasks
+                    </p>
                   </div>
                 </div>
-              ));
-            })()}
-          </div>
+              );
+            }
+            return (
+              <div className="grid grid-rows-4 grid-cols-1 gap-3 overflow-y-auto min-h-0 flex-1 h-full">
+                {allTasks.map((task, idx) => {
+                  const className = userClasses.find(cls => cls._id === task.classId)?.className || "Unknown Class";
+                  const dateObj = typeof task.dueDate === 'string' ? new Date(task.dueDate) : task.dueDate;
+                  const formattedDate = dateObj.toLocaleDateString();
+                  return (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between bg-[#F3F3F3] rounded-xl px-3 py-2 border border-[#E5E7EB] row-span-1"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{getTruncatedTaskName(task.name)}</span>
+                        <span className="text-xs text-[#654545] font-medium font-(family-name:--font-IBMPlexSans)">{className}</span>
+                      </div>
+                      <div className="flex flex-col items-end">
+                        <span className="text-xs text-[#3F3131] font-medium font-(family-name:--font-IBMPlexSans)">{formattedDate}</span>
+                        <span className={`text-xs font-bold font-(family-name:--font-IBMPlexSans) ${task.isComplete ? "text-green-600" : "text-red-600"}`}>{task.isComplete ? "Complete" : "Pending"}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>

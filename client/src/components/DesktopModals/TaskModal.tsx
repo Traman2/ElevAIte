@@ -75,9 +75,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
       .then(() => {
         setIsSuccess(true);
         if (onTaskAdded) onTaskAdded();
-        setTimeout(() => {
-          if (onClose) onClose();
-        }, 1200);
+        if (onClose) onClose();
       })
       .catch((err) => {
         setError("Failed to create class or task. Please try again.");
@@ -92,7 +90,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
         <h2 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexMono) mb-2">
           Add New Class
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" autoComplete="off">
           <div>
             <label className="block mb-1 text-[17px] font-bold text-[#3F3131]">Class Name</label>
             <input
@@ -101,6 +99,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
               className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-gray-100 text-[#3F3131] font-semibold text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D]"
               placeholder="Enter class name"
               style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}
+              autoComplete="off"
             />
             {errors.className && (
               <p className="text-red-600 text-sm mt-1">{errors.className.message}</p>
@@ -128,6 +127,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-gray-100 text-[#3F3131] font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D]"
                   placeholder="Enter task name"
                   style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}
+                  autoComplete="off"
                 />
                 {errors.task?.taskName && (
                   <p className="text-red-600 text-sm mt-1">{errors.task.taskName.message}</p>
@@ -155,6 +155,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
                   {...register("task.dueDate")}
                   className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-gray-100 text-[#3F3131] font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D]"
                   style={{ fontFamily: 'IBM Plex Sans, sans-serif' }}
+                  autoComplete="off"
                 />
                 {errors.task?.dueDate && (
                   <p className="text-red-600 text-sm mt-1">{errors.task.dueDate.message}</p>
@@ -171,7 +172,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
           <div className="flex gap-3 mt-4">
             <button
               type="submit"
-              className="bg-[#FCD34D] font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-bold py-2 px-4 rounded-xl shadow-md hover:bg-[#F59E0B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-[#FCD34D] cursor-pointer font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-bold py-2 px-4 rounded-xl shadow-md hover:bg-[#F59E0B] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               disabled={isSubmitting || isSuccess}
             >
               {isSubmitting ? "Adding..." : isSuccess ? "Success!" : "Add Class"}
@@ -179,7 +180,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
             <button
               type="button"
               onClick={onClose}
-              className="text-sm bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="text-sm cursor-pointer bg-gray-300 font-(family-name:--font-IBMPlexSans) text-[#3F3131] font-semibold py-2 px-4 rounded-xl shadow-md hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
               Cancel

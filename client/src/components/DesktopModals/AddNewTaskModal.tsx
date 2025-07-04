@@ -56,9 +56,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
       .then(() => {
         setIsSuccess(true);
         onTaskAdded();
-        setTimeout(() => {
-          if (onClose) onClose();
-        }, 1200);
+        if (onClose) onClose();
       })
       .catch((err) => {
         setError("Failed to add task. Please try again.");
@@ -77,7 +75,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
         <h2 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexMono) mb-4">
           {getTruncatedClassName(className)}
         </h2>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" autoComplete="off">
           <div>
             <label className="block mb-1 text-[17px] font-bold text-[#3F3131]">
               Task Name
@@ -88,6 +86,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
               className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-gray-100 text-[#3F3131] font-semibold text-[16px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D]"
               placeholder="Enter task name"
               style={{ fontFamily: "IBM Plex Sans, sans-serif" }}
+              autoComplete="off"
             />
             {errors.taskName && (
               <p className="text-red-600 text-sm mt-1">
@@ -101,6 +100,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
               id="status"
               {...register("status")}
               className="w-4 h-4 accent-green-500 rounded"
+              autoComplete="off"
             />
             <label
               htmlFor="status"
@@ -123,6 +123,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
               {...register("dueDate")}
               className="w-full px-4 py-2 rounded-xl border border-gray-300 bg-gray-100 text-[#3F3131] font-semibold text-[15px] focus:outline-none focus:ring-2 focus:ring-[#FCD34D]"
               style={{ fontFamily: "IBM Plex Sans, sans-serif" }}
+              autoComplete="off"
             />
             {errors.dueDate && (
               <p className="text-red-600 text-sm mt-1">
