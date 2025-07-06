@@ -447,7 +447,7 @@ export default function Tasks({
                         </button>
                         <div className="flex flex-col">
                           <span
-                            className="text-sm font-bold text-[#3F3131]"
+                            className={`text-sm ${task.isComplete && "line-through decoration-2"} font-bold text-[#3F3131]`}
                             style={{ fontFamily: "IBM Plex Sans, sans-serif" }}
                           >
                             {task.name}

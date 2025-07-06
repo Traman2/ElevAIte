@@ -22,8 +22,12 @@ const createTransaction = async (req, res) => {
 
     if (acc.accountType === "Credit") {
       if (category === "Deposit") {
+        if (acc.balance < amt) {
+          return res.status(400).json({ message: "Insufficient Pay off, debt too low" });
+        }
         acc.balance -= amt;
         acc.incoming += amt;
+        
       } else if (category === "Withdraw") {
         acc.balance += amt;
         acc.spending += amt;

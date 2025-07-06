@@ -94,7 +94,7 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
 
   return (
     <>
-      <div className="flex flex-col h-full min-h-0">
+      <div className="flex flex-col h-full min-h-0 px-1">
         <div className="flex mb-6">
           <h1 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
             Internship Manager
