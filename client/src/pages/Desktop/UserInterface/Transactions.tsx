@@ -93,7 +93,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
     <div className="flex flex-col h-full min-h-0 px-1">
       <div className="flex">
         <h1 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-          Transactions
+          Balance
         </h1>
         <button
           onClick={onAddTransaction}

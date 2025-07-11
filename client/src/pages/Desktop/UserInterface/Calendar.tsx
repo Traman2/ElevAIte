@@ -1,7 +1,7 @@
 export default function Calendar() {
   
     return (
-        <div>
+        <div className="px-1">
         <h1
           className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)"
         >

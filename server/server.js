@@ -10,6 +10,7 @@ import transactionRoutes from './routes/transactionRoutes.js'
 import internshipRoutes from './routes/internshipRoutes.js'
 import classRoutes from './routes/classRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
+import embedRoutes from './routes/embedRoutes.js'
 
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/transaction', transactionRoutes);
 app.use('/internship', internshipRoutes);
 app.use('/class', classRoutes);
 app.use('/task', taskRoutes);
+app.use('/embed', embedRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}...`);

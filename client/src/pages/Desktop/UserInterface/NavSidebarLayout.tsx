@@ -23,6 +23,7 @@ import InternshipManagerModal from "../../../components/DesktopModals/Internship
 import InternshipAddModal from "../../../components/DesktopModals/InternshipAddModal";
 import TaskModal from "../../../components/DesktopModals/TaskModal";
 import AddNewTaskModal from "../../../components/DesktopModals/AddNewTaskModal";
+import AIAssistant from "./AIAssistant";
 
 interface Props {
   page: string;
@@ -257,6 +258,8 @@ export default function NavSidebarLayout({ page }: Props) {
         );
       case "Calendar":
         return <Calendar />;
+      case "AIAssistant":
+        return <AIAssistant />
       case "Security":
         return <Security />;
       case "Settings":
@@ -371,7 +374,7 @@ export default function NavSidebarLayout({ page }: Props) {
           <div className="flex items-center space-x-3 pr-1">
             <button
               onClick={() => handleSearch()}
-              className="font-semibold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#EAE3E3] hover:bg-gray-300 text-[#5C543C] px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
+              className="font-semibold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#EAE3E3] hover:bg-gray-300 text-[#5C543C] px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
             >
               <span>Search</span>
               <img
@@ -382,7 +385,7 @@ export default function NavSidebarLayout({ page }: Props) {
             </button>
             <button
               onClick={() => handleLogout()}
-              className="font-bold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#D44E4E] hover:bg-red-700 text-white px-3 py-1.5 rounded-3xl transition-colors duration-200 text-sm"
+              className="font-bold font-(family-name:--font-IBMPlexSans) cursor-pointer flex items-center space-x-2 bg-[#D44E4E] hover:bg-red-700 text-white px-3 py-1.5 rounded-md transition-colors duration-200 text-sm"
             >
               <span>Logout</span>
               <img

@@ -40,6 +40,8 @@ export default function App() {
               <Route path="Calendar" element={<NavSidebarLayout page="Calendar" />} />
               <Route path="Security" element={<NavSidebarLayout page="Security" />} />
               <Route path="Settings" element={<NavSidebarLayout page="Settings" />} />
+              <Route path="AIAssistant" element={<NavSidebarLayout page="AIAssistant" />} />
+
             </Routes>
           </Router>
         </>

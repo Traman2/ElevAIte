@@ -168,7 +168,7 @@ export default function Tasks({
   }
 
   return (
-    <div className="h-full min-h-0 flex flex-col">
+    <div className="h-full min-h-0 flex pb-2 flex-col">
       <div className="flex mb-4 px-1">
         <h1 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
           My Tasks
