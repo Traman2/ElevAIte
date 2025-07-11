@@ -1,10 +1,18 @@
 import React, { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+
+export function fixMarkdownLineBreaks(mdText: string): string {
+  return mdText
+    .replace(/\\n\\n/g, '\n \n')         // handle double \n as paragraph breaks
+    .replace(/\\n/g, '  \n');           // handle single \n as markdown line breaks
+}
 
 export default function AIAssistant() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<
     { sender: "user" | "assistant"; text: string }[]
   >([]);
+  const [loading, setLoading] = useState(false);
 
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
@@ -18,17 +26,33 @@ export default function AIAssistant() {
     setInput(e.target.value);
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
-    console.log(input);
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
     setInput("");
-    setTimeout(() => {
+    setLoading(true);
+    try {
+      const response = await fetch("http://localhost:3000/embed/query/685a077739b9a7f470eab57b", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: input }),
+      });
+      if (!response.ok) throw new Error("Network response was not ok");
+      const data = await response.json();
       setMessages((prev) => [
         ...prev,
-        { sender: "assistant", text: "Feature coming soon. Still working on AI RAG Model to help handle semantic queries" },
+        { sender: "assistant", text: data.message?.message || "No response from assistant." },
       ]);
-    }, 500);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "assistant", text: "Sorry, there was an error processing your request." },
+      ]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -78,12 +102,21 @@ export default function AIAssistant() {
                   className={
                     msg.sender === "user"
                       ? "self-end bg-white text-[#3F3131] text-sm px-4 py-3 font-medium rounded-xl max-w-sm shadow font-(family-name:--font-IBMPlexSans)"
-                      : "self-start bg-[#EAE3E3] text-black px-4 text-sm py-3 rounded-xl font-medium max-w-sm shadow font-(family-name:--font-IBMPlexSans)"
+                      : "self-start bg-[#EAE3E3]  px-4 py-3 rounded-xl max-w-sm shadow"
                   }
                 >
-                  {msg.text}
+                  {msg.sender === "assistant" ? (
+                    <ReactMarkdown>{fixMarkdownLineBreaks(msg.text)}</ReactMarkdown>
+                  ) : (
+                    fixMarkdownLineBreaks(msg.text)
+                  )}
                 </div>
               ))}
+              {loading && (
+                <div className="self-start bg-[#EAE3E3] text-black px-4 text-sm py-3 rounded-xl font-medium max-w-sm shadow font-(family-name:--font-IBMPlexSans) opacity-70 animate-pulse">
+                  Assistant is typing...
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -105,7 +138,7 @@ export default function AIAssistant() {
           className="bg-[#10BC2D] cursor-pointer rounded-lg px-6 py-2 flex items-center justify-center hover:bg-green-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ height: "100%" }}
           onClick={handleSend}
-          disabled={!input.trim()}
+          disabled={!input.trim() || loading}
         >
           <img
             src="/icons/AIAssistant/mynaui--send-solid.svg"

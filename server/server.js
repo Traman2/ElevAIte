@@ -10,7 +10,7 @@ import transactionRoutes from './routes/transactionRoutes.js'
 import internshipRoutes from './routes/internshipRoutes.js'
 import classRoutes from './routes/classRoutes.js'
 import taskRoutes from './routes/taskRoutes.js'
-import embedRoutes from './routes/embedRoutes.js'
+import embedRoutes from './routes/ragAIRoutes.js'
 
 
 dotenv.config();

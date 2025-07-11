@@ -1,5 +1,6 @@
 import { pinecone } from "../services/pinecone.js";
-import { generateUserDataDocument } from "../controllers/ragDocumentGenerator.js";
+import { generateUserDataDocument } from "./ragDocumentGenerator.js";
+import { ragQueryHandler } from "../services/ragEngine.js";
 
 const embedUserStateToPinecone = async (req, res) => {
   try {
@@ -111,7 +112,21 @@ const embedUserStateToPinecone = async (req, res) => {
       `Total Classes: ${data.summary.totalClasses}\n` +
       `Total Internships: ${data.summary.totalInternships} | Accepted: ${data.summary.acceptedInternships} | Pending: ${data.summary.pendingInternships}`;
 
+    const internshipSummaryText = data.internships
+      .map((intern) => {
+        const created = new Date(intern.createdAt).toLocaleDateString();
+        const updated = new Date(intern.updatedAt).toLocaleDateString();
+        return `Internship: ${intern.name} at ${intern.employer} | Category: ${intern.category}\nStatus: ${intern.status} | Date: ${intern.date}\nCreated: ${created}, Updated: ${updated}\n`;
+      })
+      .join("\n");
+
     const records = [
+      createRecord(
+        `internship-summary-${userId}`,
+        internshipSummaryText,
+        "internship_summary",
+        "internship_summary"
+      ),
       ...bankAccountChunks,
       ...transactionChunks,
       createRecord(
@@ -122,7 +137,12 @@ const embedUserStateToPinecone = async (req, res) => {
       ),
       ...taskChunks,
       ...internshipChunks,
-      createRecord(`summary-${userId}`, summaryText, "summary", "summary"),
+      createRecord(
+        `summary-${userId}`,
+        summaryText,
+        "main_summary",
+        "main_summary"
+      ),
     ];
 
     await index.upsertRecords(records, { namespace });
@@ -140,4 +160,17 @@ const embedUserStateToPinecone = async (req, res) => {
   }
 };
 
-export { embedUserStateToPinecone };
+const ragQueryCall = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { query } = req.body;
+    const data = await ragQueryHandler(query, userId);
+    res.status(200).json({message: data});
+  } catch (error) {
+    res
+      .status(400)
+      .json(`Error handeling Query for ${req.params.userId}: ${error.message}`);
+  }
+};
+
+export { embedUserStateToPinecone, ragQueryCall };
