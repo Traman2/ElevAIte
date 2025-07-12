@@ -80,7 +80,10 @@ export default function InternshipManager({ userId, onApplicationClick, onAddInt
     setStatusUpdating(id);
     setStatusError(null);
     axios
-      .patch(`http://localhost:3000/internship/${id}`, { status: newStatus })
+      .patch(`http://localhost:3000/internship/${id}`, { 
+        updates: { status: newStatus },
+        userId: userId 
+      })
       .then(() => {
         setStatusEditId(null);
         setStatusUpdating(null);

@@ -259,7 +259,7 @@ export default function NavSidebarLayout({ page }: Props) {
       case "Calendar":
         return <Calendar />;
       case "AIAssistant":
-        return <AIAssistant />
+        return <AIAssistant userData={userData} />
       case "Security":
         return <Security />;
       case "Settings":
@@ -304,6 +304,7 @@ export default function NavSidebarLayout({ page }: Props) {
             application={viewApplication}
             onClose={handleCloseModal}
             onDelete={() => setInternshipRefreshKey((k) => k + 1)}
+            userId={userData?._id}
           />
         ) : null;
       case "addInternship":

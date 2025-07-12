@@ -1,6 +1,7 @@
 import Transaction from "../models/transactionModel.js";
 import User from "../models/userModel.js";
 import Account from "../models/bankAccountModel.js";
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 const createTransaction = async (req, res) => {
   try {
@@ -56,6 +57,8 @@ const createTransaction = async (req, res) => {
     });
 
     const savedTransact = await newTransact.save();
+    embedUserStateToPineconeLocal(userId);
+
     res.status(201).send(savedTransact);
   } catch (error) {
     res.status(500).json({ message: "Error creating transaction", error });

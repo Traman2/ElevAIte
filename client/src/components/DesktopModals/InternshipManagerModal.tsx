@@ -14,6 +14,7 @@ interface InternshipManagerModalProps {
   application: ApplicationData;
   onClose: () => void;
   onDelete?: () => void;
+  userId?: string;
 }
 
 const statusColors: Record<string, string> = {
@@ -27,10 +28,13 @@ export default function InternshipManagerModal({
   application,
   onClose,
   onDelete,
+  userId,
 }: InternshipManagerModalProps) {
   const handleDelete = () => {
     console.log(application._id)
-    axios.delete(`http://localhost:3000/internship/${application._id}`)
+    axios.delete(`http://localhost:3000/internship/${application._id}`, {
+      data: { userId: userId }
+    })
       .then((response) => {
         if (response.status === 200) {
           if (onDelete) {

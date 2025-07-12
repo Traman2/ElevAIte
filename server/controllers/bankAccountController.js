@@ -1,5 +1,6 @@
 import Account from "../models/bankAccountModel.js";
 import User from "../models/userModel.js";
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 // Create a new account
 const createAccount = async (req, res) => {
@@ -25,6 +26,8 @@ const createAccount = async (req, res) => {
     }
 
     const savedAccount = await newAccount.save();
+
+    embedUserStateToPineconeLocal(userId);
     res.status(201).send(savedAccount);
   } catch (error) {
     res.status(500).json({ message: "Error creating account", error });

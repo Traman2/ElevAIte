@@ -68,6 +68,7 @@ export default function TaskModal({ onClose, userId, onTaskAdded } : Props) {
             isComplete: !!data.task.status,
             dueDate: new Date(data.task.dueDate || '').toISOString(),
             classId: classId,
+            userId: userId,
           });
         }
         return null;

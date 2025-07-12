@@ -2,14 +2,12 @@ import { pinecone } from "../services/pinecone.js";
 import { generateUserDataDocument } from "./ragDocumentGenerator.js";
 import { ragQueryHandler } from "../services/ragEngine.js";
 
-const embedUserStateToPinecone = async (req, res) => {
+const embedUserStateToPineconeLocal = async (userId) => {
   try {
-    const { userId } = req.params;
     const indexName = "vectordb";
     const namespace = userId.toString();
     const data = await generateUserDataDocument(userId);
     const index = pinecone.index(indexName).namespace(namespace);
-    console.log(data); // DEBUG
 
     const createRecord = (id, text, type, name) => ({
       id,
@@ -147,16 +145,15 @@ const embedUserStateToPinecone = async (req, res) => {
 
     await index.upsertRecords(records, { namespace });
 
-    res
-      .status(200)
-      .json(`Embedded all user data chunks for user ${userId} successfully.`);
+    return ({
+      message: `Embedded all user data chunks for user ${userId} successfully.`
+    })
+
   } catch (error) {
-    console.error(`Error embedding data for user ${req.params.userId}:`, error);
-    res
-      .status(400)
-      .json(
-        `Error embedding data for user ${req.params.userId}: ${error.message}`
-      );
+
+    return ({
+      message: `Error embedding data for user ${req.params.userId}: ${error.message}`
+    })
   }
 };
 
@@ -173,4 +170,4 @@ const ragQueryCall = async (req, res) => {
   }
 };
 
-export { embedUserStateToPinecone, ragQueryCall };
+export { embedUserStateToPineconeLocal, ragQueryCall };

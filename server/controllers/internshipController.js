@@ -1,5 +1,6 @@
 import Internship from '../models/internshipModel.js';
 import User from "../models/userModel.js";
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 // Create new internship
 const createInternship = async (req, res) => {
@@ -11,6 +12,7 @@ const createInternship = async (req, res) => {
     }
     const internship = new Internship({ date, name, category, employer, status, description, userId });
     await internship.save();
+    embedUserStateToPineconeLocal(userId);
     res.status(201).json(internship);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -36,7 +38,10 @@ const getUserInternships = async (req, res) => {
 const deleteInternship = async (req, res) => {
   try {
     const { id } = req.params;
+    const {userId} = req.body;
     await Internship.findByIdAndDelete(id);
+    embedUserStateToPineconeLocal(userId);
+
     res.json({ message: 'Internship deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -47,11 +52,13 @@ const deleteInternship = async (req, res) => {
 const updateInternship = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const {updates, userId} = req.body;
     const internship = await Internship.findByIdAndUpdate(id, updates, { new: true });
     if (!internship) {
       return res.status(404).json({ message: 'Internship not found' });
     }
+    embedUserStateToPineconeLocal(userId);
+
     res.json(internship);
   } catch (err) {
     res.status(400).json({ error: err.message });

@@ -52,6 +52,7 @@ export default function AddNewTaskModal({ onClose, classId, onTaskAdded, userId 
         isComplete: !!data.status,
         dueDate: new Date(data.dueDate).toISOString(),
         classId: classId,
+        userId: userId,
       })
       .then(() => {
         setIsSuccess(true);

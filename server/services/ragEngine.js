@@ -11,6 +11,8 @@ import TaskModel from "../models/taskModel.js";
 import Transaction from "../models/transactionModel.js";
 import Account from "../models/bankAccountModel.js";
 
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
+
 const genAI = new GoogleGenAI(process.env.GOOGLE_API_KEY);
 
 export const ragQueryHandler = async (query, userId) => {
@@ -35,7 +37,7 @@ export const ragQueryHandler = async (query, userId) => {
         Only choose one of the following:
         - "retriveData": The user is asking to view or summarize information (e.g., tasks, internships, balances, summaries).
         - "createClass": The user is asking to create a new class
-        - "createTask": The user is asking to create a task for a class
+        - "createTaskFromClass": The user is asking to create a task for a class
         - "createAccount": The user is asking to create a bank account
         - "createTransaction": The user is asking to add a transaction to an account
         - "createInternship": The user is asking to create a new internship to add to internship manager
@@ -93,15 +95,20 @@ export const ragQueryHandler = async (query, userId) => {
   });
 
   let response = {};
+
+  // Intent Handler
   switch (result.intent) {
     case "retriveData":
       response = viewClassSummary(hits, query);
       break;
     case "createClass":
-      response = createClass();
+      response = createClass(query, userId);
+      break;
+    case "createTaskFromClass":
+      response = createTaskFromClass(query, userId, hits);
       break;
     case "createAccount":
-      response = createAccount();
+      response = createAccount(query, userId);
       break;
     case "createTransaction":
       response = createTransaction();
@@ -135,7 +142,7 @@ const viewClassSummary = async (chunks, query) => {
         Your goal is to analyze the user's question and respond clearly and thoroughly **using only the context provided below**.
 
         --- OBJECTIVE ---
-        - Provide an informative, friendly, and well-formatted response.
+        - Provide an informative, friendly, and well-formatted response with lots of content and details.
         - Use only the relevant data given in the context to answer.
         - If multiple records are relevant (e.g., multiple tasks or accounts), list them clearly in sections.
         - If certain information is not found in the context, gracefully say so.
@@ -155,7 +162,7 @@ const viewClassSummary = async (chunks, query) => {
         - Use bold for important labels (e.g., **Due Date**, **Status**, **Balance**).
 
         --- CONTEXT DATA ---
-        ${context}  ← You will be provided with this separately during runtime. Use it only as your knowledge source.
+        ${context}
 
         Now, using the context above, answer the following user query given
 `,
@@ -167,18 +174,164 @@ const viewClassSummary = async (chunks, query) => {
   return { message: airesponse.text, format: "viewClassSummary" };
 };
 
-const createClass = () => {
-  const message =
-    "Support for Creating a New Class is coming soon. Please try asking the personal assistant to view class information or bank balances";
-  console.log(message);
-  return { message: message, format: "createClass" };
+const createClass = async (query, userId) => {
+
+  //Gemini LLM Call
+  const airesponse = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: query,
+    config: {
+      systemInstruction: `
+        You are an intelligent AI Assistant that assists students with making classes. Read the users query which will always be about making classes to add to task manager
+
+        Your goal is to take users query and make a JSON that contains className and AI message to show to user that confirms class was made. 
+
+
+        - For example:
+        {
+          className: "UNIX Programming",
+          aiMessage: Create your message notifying class is made
+        }
+    `,
+        },
+      });
+
+  let result = airesponse.text;
+  result = result.replace(/```(?:json)?\n?/g, "");
+  result = JSON.parse(result);
+  console.log(result);
+
+  //Create data and return value
+  try {
+    const newClass = new ClassModel({
+      className: result.className,
+      userId: userId
+    });
+    
+    await newClass.save();
+    embedUserStateToPineconeLocal(userId);
+    console.log(`New class created: ${result.className} for user ${userId}`);
+    
+    return { message: result.aiMessage, format: "createClass" };
+  } catch (error) {
+    console.error("Error creating class:", error);
+    return { 
+      message: "Sorry, I encountered an error while creating the class. Please try again.", 
+      format: "createClass" 
+    };
+  }
 };
 
-const createAccount = () => {
-  const message =
-    "Support for Creating a New Bank Account is coming soon. Please try asking the personal assistant to view class information or bank balances";
-    console.log(message);
-  return { message: message, format: "createAccount" };
+const createAccount = async (query, userId) => {
+  //Gemini LLM Call
+  const airesponse = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: query,
+    config: {
+      systemInstruction: `
+        You are an intelligent AI Assistant that assists students with making new bankAccounts. Read the users query which will always be about making new bank accounts to budget their finances
+
+        Your goal is to take users query and make a JSON that contains bank account name, account type which infered from the name, set it to one of three values: Savings, Debit, or Credit. Then third value is the balance. If none speciied. then set to zero 
+
+
+        - For example:
+        {
+          accountName: "Certificate Deposit",
+          accountType: "Savings",
+          balance: 0,
+          aiMessage: "Create your message notifying account was made"
+        }
+    `,
+        },
+      });
+
+  let result = airesponse.text;
+  result = result.replace(/```(?:json)?\n?/g, "");
+  result = JSON.parse(result);
+  console.log(result);
+
+  //Create data and return value
+  try {
+    const newAccount = new Account({
+      accountName: result.accountName,
+      accountType: result.accountType,
+      balance: result.balance || 0,
+      userId: userId
+    });
+    
+    await newAccount.save();
+    embedUserStateToPineconeLocal(userId);
+    console.log(`New account created: ${result.accountName} for user ${userId}`);
+    
+    return { message: result.aiMessage, format: "createAccount" };
+  } catch (error) {
+    console.error("Error creating account:", error);
+    return { 
+      message: "Sorry, I encountered an error while creating the account. Please try again.", 
+      format: "createAccount" 
+    };
+  }
+};
+
+const createTaskFromClass = async (query, userId, chunks) => {
+  const context = chunks
+    .map((chunk, index) => {
+      return `# Record ${index + 1}\nType: ${chunk.fields.type}\nName: ${
+        chunk.fields.name
+      }\nContent: ${chunk.fields.chunk_text}`;
+    })
+    .join("\n\n");
+
+    const today = new Date();
+
+  //Gemini LLM Call
+  const airesponse = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: query,
+    config: {
+      systemInstruction: `
+        You are an intelligent AI assistant that helps students create tasks for their academic classes.
+        Your role is to analyze the user's query and generate a structured JSON object only containing the following information:
+        taskName: A clear name for the task based on the query.
+        isCompleted: A boolean value indicating task completion. If the user does not mention status, default this to false.
+        dueDate: The due date of the task, if specified in the query. If none specified set due date 3 days from ${today} and if year not specifed then set to ${today} which is todays year and include in aMessage that no date is specified
+        classId: The unique MongoDB identifier (classId) of the class referenced in the query. Use the provided context to match the class name and extract its classId MongoDB object id.
+        You should also return an aiMessage field — a brief, user-friendly message confirming the task was created.
+
+         --- CONTEXT DATA ---
+        ${context}
+
+        Now, using the context above, create the json result. 
+    `,
+        },
+      });
+
+  let result = airesponse.text;
+  result = result.replace(/```(?:json)?\n?/g, "");
+  result = JSON.parse(result);
+  console.log(result);
+
+  //Create data and return value
+  try {
+    const newTask = new TaskModel({
+      name: result.taskName,
+      isComplete: result.isCompleted || false,
+      dueDate: new Date(result.dueDate),
+      classId: result.classId
+    });
+    
+    await newTask.save();
+    embedUserStateToPineconeLocal(userId);
+    console.log(`New task created: ${result.taskName} for class ${result.classId}`);
+    
+    return { message: result.aiMessage, format: "createTaskFromClass" };
+  } catch (error) {
+    console.error("Error creating task:", error);
+    return { 
+      message: "Sorry, I encountered an error while creating the task. Please try again.", 
+      format: "createTaskFromClass" 
+    };
+  }
 };
 
 const createTransaction = () => {
@@ -196,7 +349,7 @@ const createInternship = () => {
 };
 
 const notRelatedToActivityManagement = () => {
-  const message = "I am unable to answer that question. Please try again";
+  const message = "That feature is currently not supported. Please try again later or reword your message";
   console.log(message);
   return { message: message, format: "notRelatedToActivityManagement" };
 };

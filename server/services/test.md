@@ -1,10 +1,12 @@
-Hello there! I'd be happy to help you with your account balances.
+Hello there! I can help you with a summary of your Discrete Math class.
 
-Here are the current balances for your accounts:
+Here is the information I found:
 
-*   **Savings Account 1:** \$5076.69
-*   **Checking Account:** \$219.70
-*   **Savings Account 2:** \$6000.00
-*   **Credit Card:** \$80.60
+## Class Summary: Discrete Math
 
-Let me know if you need anything else!
+*   **Class Name**: Discrete Math
+*   **Assignments Pending**: 0
+*   **Assignments Completed**: 1
+*   **Assignments Overdue**: 0
+
+It looks like you have no pending or overdue assignments for Discrete Math, which is great!

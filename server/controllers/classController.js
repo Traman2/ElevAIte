@@ -1,5 +1,6 @@
 import ClassModel from '../models/classModel.js';
 import User from '../models/userModel.js';
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 // Create a new class
 const createClass = async (req, res) => {
@@ -9,6 +10,7 @@ const createClass = async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
     const newClass = new ClassModel({ className, userId });
     await newClass.save();
+    embedUserStateToPineconeLocal(userId);
     res.status(201).json(newClass);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -30,8 +32,9 @@ const getUserClasses = async (req, res) => {
 const updateClass = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const {updates, userId} = req.body;
     const updated = await ClassModel.findByIdAndUpdate(id, updates, { new: true });
+    embedUserStateToPineconeLocal(userId);
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -42,7 +45,9 @@ const updateClass = async (req, res) => {
 const deleteClass = async (req, res) => {
   try {
     const { id } = req.params;
+    const { userId } = req.body;
     await ClassModel.findByIdAndDelete(id);
+    embedUserStateToPineconeLocal(userId);
     res.json({ message: 'Class deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });

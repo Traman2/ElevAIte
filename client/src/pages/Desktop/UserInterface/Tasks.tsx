@@ -90,7 +90,9 @@ export default function Tasks({
   const handleDeleteClass = (classId: string) => {
     setOpenMenuIdx(null);
     axios
-      .delete(`http://localhost:3000/class/${classId}`)
+      .delete(`http://localhost:3000/class/${classId}`, {
+        data: { userId: userData?._id }
+      })
       .then(async () => {
         if (userData) {
           const classRes = await axios.get(
@@ -120,7 +122,8 @@ export default function Tasks({
   const handleSaveEdit = (classId: string) => {
     axios
       .patch(`http://localhost:3000/class/${classId}`, {
-        className: editingClassName,
+        updates: { className: editingClassName },
+        userId: userData?._id,
       })
       .then(async () => {
         setEditingClassId(null);
@@ -141,7 +144,8 @@ export default function Tasks({
   const handleToggleTaskComplete = (taskId: string, isComplete: boolean) => {
     axios
       .patch(`http://localhost:3000/task/${taskId}`, {
-        isComplete: !isComplete,
+        updates: { isComplete: !isComplete },
+        userId: userData?._id,
       })
       .then(async () => {
         if (userData) {

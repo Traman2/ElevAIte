@@ -1,14 +1,16 @@
 import TaskModel from '../models/taskModel.js';
 import ClassModel from '../models/classModel.js';
+import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 // Create a new task
 const createTask = async (req, res) => {
   try {
-    const { name, isComplete, dueDate, classId } = req.body;
+    const { name, isComplete, dueDate, classId, userId } = req.body;
     const classObj = await ClassModel.findById(classId);
     if (!classObj) return res.status(404).json({ message: 'Class not found' });
     const newTask = new TaskModel({ name, isComplete, dueDate, classId });
     await newTask.save();
+    embedUserStateToPineconeLocal(userId);
     res.status(201).json(newTask);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -30,8 +32,9 @@ const getClassTasks = async (req, res) => {
 const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const updates = req.body;
+    const {updates, userId} = req.body;
     const updated = await TaskModel.findByIdAndUpdate(id, updates, { new: true });
+    embedUserStateToPineconeLocal(userId);
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -43,6 +46,8 @@ const deleteTask = async (req, res) => {
   try {
     const { id } = req.params;
     await TaskModel.findByIdAndDelete(id);
+    const {userId} = req.body;
+    embedUserStateToPineconeLocal(userId);
     res.json({ message: 'Task deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });

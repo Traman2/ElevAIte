@@ -1,13 +1,23 @@
 import React, { useState, useRef, useEffect } from "react";
-import ReactMarkdown from "react-markdown";
-
+import axios from "axios";
+import MarkdownRenderer from '../../../helper/MarkdownRenderer.tsx';
 export function fixMarkdownLineBreaks(mdText: string): string {
   return mdText
     .replace(/\\n\\n/g, '\n \n')         // handle double \n as paragraph breaks
     .replace(/\\n/g, '  \n');           // handle single \n as markdown line breaks
 }
 
-export default function AIAssistant() {
+interface AIAssistantProps {
+  userData?: {
+    _id: string;
+    userName: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+}
+
+export default function AIAssistant({ userData }: AIAssistantProps) {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<
     { sender: "user" | "assistant"; text: string }[]
@@ -26,33 +36,43 @@ export default function AIAssistant() {
     setInput(e.target.value);
   };
 
-  const handleSend = async () => {
+  const handleSend = () => {
     if (!input.trim()) return;
     setMessages((prev) => [...prev, { sender: "user", text: input }]);
     setInput("");
     setLoading(true);
-    try {
-      const response = await fetch("http://localhost:3000/embed/query/685a077739b9a7f470eab57b", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ query: input }),
-      });
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
+    
+    if (!userData?._id) {
       setMessages((prev) => [
         ...prev,
-        { sender: "assistant", text: data.message?.message || "No response from assistant." },
+        { sender: "assistant", text: "Please log in to use the AI Assistant." },
       ]);
-    } catch (error) {
+      setLoading(false);
+      return;
+    }
+    
+    axios.post(`http://localhost:3000/embed/query/${userData._id}`, {
+      query: input
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+      }
+    })
+    .then((response) => {
+      setMessages((prev) => [
+        ...prev,
+        { sender: "assistant", text: response.data.message?.message || "No response from assistant." },
+      ]);
+    })
+    .catch(() => {
       setMessages((prev) => [
         ...prev,
         { sender: "assistant", text: "Sorry, there was an error processing your request." },
       ]);
-    } finally {
+    })
+    .finally(() => {
       setLoading(false);
-    }
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -102,13 +122,13 @@ export default function AIAssistant() {
                   className={
                     msg.sender === "user"
                       ? "self-end bg-white text-[#3F3131] text-sm px-4 py-3 font-medium rounded-xl max-w-sm shadow font-(family-name:--font-IBMPlexSans)"
-                      : "self-start bg-[#EAE3E3]  px-4 py-3 rounded-xl max-w-sm shadow"
+                      : "self-start bg-[#EAE3E3]  px-4 py-1 rounded-xl max-w-sm shadow"
                   }
                 >
                   {msg.sender === "assistant" ? (
-                    <ReactMarkdown>{fixMarkdownLineBreaks(msg.text)}</ReactMarkdown>
+                    <MarkdownRenderer mdText={msg.text} />
                   ) : (
-                    fixMarkdownLineBreaks(msg.text)
+                    msg.text
                   )}
                 </div>
               ))}
