@@ -370,6 +370,18 @@ export default function NavSidebarLayout({ page }: Props) {
             >
               Good Morning, {userData?.firstName}
             </span>
+            {/* AI Assistant Button */}
+            <button
+              aria-label={userData?.firstName || "AI Assistant"}
+              className="cursor-pointer ml-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EAE3E3] hover:bg-[#d1c7c7] shadow transition-colors duration-200 border border-[#D4C4C4]"
+              type="button"
+            >
+              <img
+                src="/icons/sidebar/material-symbols-light--robot.svg"
+                alt="AI Assistant"
+                className="w-4 h-4"
+              />
+            </button>
           </div>
 
           <div className="flex items-center space-x-3 pr-1">

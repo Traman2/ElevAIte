@@ -290,49 +290,18 @@ export default function Calendar() {
             {getWeekDates(current).map((date, i) => (
               <Card
                 key={i}
-                className="flex-1 h-full flex flex-col items-start p-6 border border-[#C8B7B7] bg-[#F0E4E4] rounded-none min-w-0 min-h-0 w-full"
+                className="flex-1 h-full flex flex-col items-start p-6 border border-[#E8E3E3] bg-white rounded-none min-w-0 min-h-0 w-full"
               >
                 <div className="w-full flex justify-center items-start mb-[2px]">
                   <span className="text-xs font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
                     <span
                       className={`rounded-full w-7 h-7 flex items-center justify-center mx-auto pointer-events-auto ${isToday(date) ? "bg-blue-500 text-white" : "bg-gray-200 text-[#3F3131]"}`}
-                      onMouseEnter={e => {
-                        const dayTasks = tasks.filter((task) => {
-                          const due = new Date(task.dueDate);
-                          return (
-                            due.getFullYear() === date.getFullYear() &&
-                            due.getMonth() === date.getMonth() &&
-                            due.getDate() === date.getDate()
-                          );
-                        });
-                        if (dayTasks.length > 0) {
-                          setHoverTasks(dayTasks);
-                          setHoverPos({ x: e.clientX, y: e.clientY });
-                        }
-                      }}
-                      onMouseMove={e => {
-                        const dayTasks = tasks.filter((task) => {
-                          const due = new Date(task.dueDate);
-                          return (
-                            due.getFullYear() === date.getFullYear() &&
-                            due.getMonth() === date.getMonth() &&
-                            due.getDate() === date.getDate()
-                          );
-                        });
-                        if (dayTasks.length > 0) {
-                          setHoverPos({ x: e.clientX, y: e.clientY });
-                        }
-                      }}
-                      onMouseLeave={() => {
-                        setHoverTasks(null);
-                        setHoverPos(null);
-                      }}
                     >
                       {date.getDate()}
                     </span>
                   </span>
                 </div>
-                <div className="mt-0 flex flex-col gap-1 w-full">
+                <div className="mt-3 flex flex-col gap-2 w-full">
                   {(() => {
                     const dayTasks = tasks.filter((task) => {
                       const due = new Date(task.dueDate);
@@ -349,16 +318,15 @@ export default function Calendar() {
                       if (!classMap.has(task.classId)) classMap.set(task.classId, []);
                       classMap.get(task.classId).push(task);
                     });
-                    const firstTask = dayTasks[0];
-                    return <>
+                    return dayTasks.map((task) => (
                       <span
-                        key={firstTask._id}
-                        className={`block text-xs truncate px-1 py-0.5 rounded font-medium ${firstTask.isComplete ? "bg-green-100 text-green-700" : "bg-[#FADEDE] text-[#3F3131]"} w-full overflow-hidden whitespace-nowrap`}
-                        title={firstTask.name}
+                        key={task._id}
+                        className={`block text-xs truncate px-1 py-0.5 rounded font-medium ${task.isComplete ? "bg-green-100 text-green-700" : "bg-[#FADEDE] text-[#3F3131]"} w-full overflow-hidden whitespace-nowrap`}
+                        title={task.name}
                       >
-                        {firstTask.name}
+                        {task.name}
                       </span>
-                    </>;
+                    ));
                   })()}
                 </div>
               </Card>
@@ -373,7 +341,7 @@ export default function Calendar() {
             <span className="text-lg font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
               {current.toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" })}
             </span>
-            <div className="mt-0 flex flex-col gap-1 w-full">
+            <div className="mt-3 flex flex-col gap-2 w-full">
               {(() => {
                 const dayTasks = tasks.filter((task) => {
                   const due = new Date(task.dueDate);
@@ -386,22 +354,15 @@ export default function Calendar() {
                 if (dayTasks.length === 0) {
                   return <span className="text-[#654545] text-base font-medium font-(family-name:--font-IBMPlexSans)">No events for this day.</span>;
                 }
-                // Group by classId
-                const classMap = new Map();
-                dayTasks.forEach((task) => {
-                  if (!classMap.has(task.classId)) classMap.set(task.classId, []);
-                  classMap.get(task.classId).push(task);
-                });
-                const firstTask = dayTasks[0];
-                return <>
+                return dayTasks.map((task) => (
                   <span
-                    key={firstTask._id}
-                    className={`block text-sm truncate px-2 py-1 rounded font-medium ${firstTask.isComplete ? "bg-green-100 text-green-700" : "bg-[#FADEDE] text-[#3F3131]"}`}
-                    title={firstTask.name}
+                    key={task._id}
+                    className={`block text-sm truncate px-2 py-1 rounded font-medium ${task.isComplete ? "bg-green-100 text-green-700" : "bg-[#FADEDE] text-[#3F3131]"}`}
+                    title={task.name}
                   >
-                    {firstTask.name}
+                    {task.name}
                   </span>
-                </>;
+                ));
               })()}
             </div>
           </Card>
