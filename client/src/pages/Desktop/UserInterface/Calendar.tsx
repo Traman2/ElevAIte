@@ -109,9 +109,9 @@ export default function Calendar() {
   };
 
   return (
-    <Card className="h-full flex flex-col px-1 pt-2 pb-4 bg-[#F9F1F1] overflow-hidden">
+    <Card className="h-full flex flex-col px-1 pb-4 bg-[#F9F1F1] overflow-hidden">
       {/* Header: All controls in one row */}
-      <div className="flex items-center justify-between mb-1 gap-4 flex-wrap">
+      <div className="flex items-center justify-between mb-7 gap-4 flex-wrap">
         <h1 className="text-2xl font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans) whitespace-nowrap mr-4">
           Calendar
         </h1>
@@ -164,8 +164,8 @@ export default function Calendar() {
         </div>
       </div>
       {view === "month" && (
-        <div className="flex flex-col flex-1 h-full pb-2">
-          <div className="grid grid-cols-7 mb-0.5">
+        <div className="flex flex-col flex-1 h-full">
+          <div className="grid grid-cols-7">
             {WEEK_DAYS.map((d) => (
               <div
                 key={d}
@@ -195,49 +195,49 @@ export default function Calendar() {
                   return (
                     <Card
                       key={i + "-" + j}
-                      className={`flex flex-col items-start p-4 border border-[#C8B7B7] bg-[#F0E4E4] rounded-none flex-1 h-full min-h-0 min-w-0 w-full${roundedClass}${!isCurrentMonth ? " opacity-40" : ""}`}
+                      className={`flex flex-col items-start p-4 border ${isCurrentMonth ? "border-[#E8E3E3] bg-white" : "border-[#C8B7B7] bg-[#F0E4E4] opacity-40"} rounded-none flex-1 h-full min-h-0 min-w-0 w-full${roundedClass}`}
+                      onMouseEnter={e => {
+                        const dayTasks = tasks.filter((task) => {
+                          const due = new Date(task.dueDate);
+                          return (
+                            due.getFullYear() === date.getFullYear() &&
+                            due.getMonth() === date.getMonth() &&
+                            due.getDate() === date.getDate()
+                          );
+                        });
+                        if (dayTasks.length > 0) {
+                          setHoverTasks(dayTasks);
+                          setHoverPos({ x: e.clientX, y: e.clientY });
+                        }
+                      }}
+                      onMouseMove={e => {
+                        const dayTasks = tasks.filter((task) => {
+                          const due = new Date(task.dueDate);
+                          return (
+                            due.getFullYear() === date.getFullYear() &&
+                            due.getMonth() === date.getMonth() &&
+                            due.getDate() === date.getDate()
+                          );
+                        });
+                        if (dayTasks.length > 0) {
+                          setHoverPos({ x: e.clientX, y: e.clientY });
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        setHoverTasks(null);
+                        setHoverPos(null);
+                      }}
                     >
                       <div className="w-full flex justify-center items-start mb-[2px]">
                         <span className="text-xs font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
                           <span
                             className={`rounded-full w-7 h-7 flex items-center justify-center mx-auto pointer-events-auto ${isToday(date) ? "bg-blue-500 text-white" : "bg-gray-200 text-[#3F3131]"}`}
-                            onMouseEnter={e => {
-                              const dayTasks = tasks.filter((task) => {
-                                const due = new Date(task.dueDate);
-                                return (
-                                  due.getFullYear() === date.getFullYear() &&
-                                  due.getMonth() === date.getMonth() &&
-                                  due.getDate() === date.getDate()
-                                );
-                              });
-                              if (dayTasks.length > 0) {
-                                setHoverTasks(dayTasks);
-                                setHoverPos({ x: e.clientX, y: e.clientY });
-                              }
-                            }}
-                            onMouseMove={e => {
-                              const dayTasks = tasks.filter((task) => {
-                                const due = new Date(task.dueDate);
-                                return (
-                                  due.getFullYear() === date.getFullYear() &&
-                                  due.getMonth() === date.getMonth() &&
-                                  due.getDate() === date.getDate()
-                                );
-                              });
-                              if (dayTasks.length > 0) {
-                                setHoverPos({ x: e.clientX, y: e.clientY });
-                              }
-                            }}
-                            onMouseLeave={() => {
-                              setHoverTasks(null);
-                              setHoverPos(null);
-                            }}
                           >
                             {date.getDate()}
                           </span>
                         </span>
                       </div>
-                      <div className="mt-0 flex flex-col gap-1 w-full">
+                      <div className="mt-3 flex flex-col gap-1 w-full">
                         {(() => {
                           const dayTasks = tasks.filter((task) => {
                             const due = new Date(task.dueDate);
@@ -419,6 +419,11 @@ export default function Calendar() {
           left = window.innerWidth - cardDims.width - 12;
           if (left < 0) left = 0;
         }
+        // Find the date for the hover card
+        let hoverDate = null;
+        if (hoverTasks.length > 0) {
+          hoverDate = new Date(hoverTasks[0].dueDate);
+        }
         return (
           <div
             ref={cardRef}
@@ -432,7 +437,12 @@ export default function Calendar() {
               maxHeight: 'none',
             }}
           >
-            <div className="font-bold text-[#3F3131] mb-2 text-base">All Tasks</div>
+            <div className="font-bold text-[#3F3131] mb-2 text-base">
+              {hoverDate ? `Tasks for ${hoverDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric' })}` : 'Tasks'}
+            </div>
+            <div className="text-[#654545] text-xs mb-2 font-medium">
+              You currently have {hoverTasks.length} task{hoverTasks.length !== 1 ? 's' : ''}
+            </div>
             <div className="flex flex-col gap-3">
               {hoverTasks.map((task) => (
                 <div key={task._id} className={`flex flex-col gap-1 py-2 px-2 rounded ${task.isComplete ? "bg-green-200" : "bg-[#F5D7B8]"}`}>
