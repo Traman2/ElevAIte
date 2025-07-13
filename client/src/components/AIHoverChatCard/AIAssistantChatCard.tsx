@@ -15,12 +15,13 @@ interface AIAssistantChatCardProps {
 }
 
 const AIAssistantChatCard = ({ className, buttonPosition, userData }: AIAssistantChatCardProps) => {
+  if (!buttonPosition) return null;
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<{ sender: 'user' | 'assistant'; text: string }[]>([]);
   const [loading, setLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isDragEnabled, setIsDragEnabled] = useState(false);
-  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [position, setPosition] = useState<{ x: number; y: number } | undefined>(undefined);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -30,20 +31,19 @@ const AIAssistantChatCard = ({ className, buttonPosition, userData }: AIAssistan
       // Position the card under the button and left-aligned
       const cardWidth = 384; // w-96 = 384px
       const cardHeight = 480; // h-[480px]
-      
       // Calculate position to left-align with the button
       const initialX = buttonPosition.x;
       const initialY = buttonPosition.y + buttonPosition.height + 16; // 16px gap below button (increased from 8px)
-      
       // Ensure the card doesn't go off-screen
       const maxX = window.innerWidth - cardWidth;
       const maxY = window.innerHeight - cardHeight;
-      
       setPosition({
         x: Math.max(0, Math.min(initialX, maxX)),
         y: Math.max(0, Math.min(initialY, maxY))
       });
-    } 
+    } else {
+      setPosition(undefined);
+    }
   }, [buttonPosition]);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -140,6 +140,7 @@ const AIAssistantChatCard = ({ className, buttonPosition, userData }: AIAssistan
     });
   };
 
+  if (!buttonPosition || !position) return null;
   return (
     <div 
       ref={cardRef}

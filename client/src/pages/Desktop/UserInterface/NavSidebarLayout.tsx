@@ -79,7 +79,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [showAssets, setShowAssets] = useState(false);
 
   //ai Hover card code
-  const [showAICard, setShowAICard] = useState(false);
+  // Remove showAICard; use aiButtonPosition as the only source of truth
   const [aiButtonPosition, setAiButtonPosition] = useState<
     { x: number; y: number; width: number; height: number } | undefined
   >(undefined);
@@ -201,7 +201,7 @@ export default function NavSidebarLayout({ page }: Props) {
 
   //ai card handler logic
   const handleAICardToggle = () => {
-    if (!showAICard && aiButtonRef.current) {
+    if (!aiButtonPosition && aiButtonRef.current) {
       const rect = aiButtonRef.current.getBoundingClientRect();
       const position = {
         x: rect.left,
@@ -210,9 +210,7 @@ export default function NavSidebarLayout({ page }: Props) {
         height: rect.height,
       };
       setAiButtonPosition(position);
-      setShowAICard(true);
     } else {
-      setShowAICard(false);
       setAiButtonPosition(undefined);
     }
   };
@@ -423,13 +421,13 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 ref={aiButtonRef}
                 aria-label={
-                  showAICard ? "Close AI Assistant" : "Open AI Assistant"
+                  aiButtonPosition ? "Close AI Assistant" : "Open AI Assistant"
                 }
                 className="cursor-pointer ml-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EAE3E3] hover:bg-[#d1c7c7] shadow transition-colors duration-200 border border-[#D4C4C4]"
                 type="button"
                 onClick={handleAICardToggle}
               >
-                {showAICard ? (
+                {aiButtonPosition ? (
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
@@ -477,7 +475,7 @@ export default function NavSidebarLayout({ page }: Props) {
       </header>
 
       {/* AI Assistant Chat Card render */}
-      {showAICard && aiButtonPosition && (
+      {aiButtonPosition && (
         <AIAssistantChatCard
           buttonPosition={aiButtonPosition}
           userData={userData}
