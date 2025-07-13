@@ -41,7 +41,13 @@ interface UserData {
   email: string;
 }
 
-export default function Transactions({ onAddTransaction, userData, onShowTransactionTable, onAddAccount, refreshKey }: Props) {
+export default function Transactions({
+  onAddTransaction,
+  userData,
+  onShowTransactionTable,
+  onAddAccount,
+  refreshKey,
+}: Props) {
   const [userBankAccounts, setUserBankAccounts] = useState<
     UserBankAccount[] | null
   >(null);
@@ -102,7 +108,7 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
           Add Transaction
         </button>
         <button
-        onClick={onAddAccount}
+          onClick={onAddAccount}
           className="cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FCD34D] px-3 rounded-2xl transition-colors duration-200 flex items-center font-(family-name:--font-IBMPlexSans) ml-2"
         >
           Create Account
@@ -112,99 +118,138 @@ export default function Transactions({ onAddTransaction, userData, onShowTransac
       <h2 className="text-xl mt-4 font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans) mb-2">
         Accounts
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-5">
-        {userBankAccounts ? (
-          userBankAccounts.map((account) => (
-            <>
-              <div className={`${
-                      account.accountType === "Credit"
-                        ? "bg-[#EE9898] border border-[#DA7C7C]"
-                        : "bg-[#57C785]/60 border border-[#4CAF75]/43"
-                    } rounded-2xl pt-3 pb-1 px-4 min-h-16`}>
-                <div className="mb-1">
-                  <h3 className="text-sm font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                    {account.accountName} ...1234
-                  </h3>
-                  <p className="text-lg font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-                    USD {formatCurrency(account.balance)}
-                  </p>
+      {userBankAccounts && userBankAccounts.length === 0 ? (
+        <div className="flex flex-1 items-center justify-center my-8">
+          <button
+            onClick={onAddAccount}
+            className="cursor-pointer text-lg font-semibold text-gray-500 hover:text-blue-600 transition-colors border border-dashed border-gray-400 px-6 py-4 rounded-lg bg-gray-50"
+            style={{ fontFamily: "IBM Plex Sans, sans-serif" }}
+          >
+            Add Bank Account
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-5">
+            {userBankAccounts ? (
+              userBankAccounts.map((account) => (
+                <div
+                  key={account._id}
+                  className={`${
+                    account.accountType === "Credit"
+                      ? "bg-[#EE9898] border border-[#DA7C7C]"
+                      : "bg-[#57C785]/60 border border-[#4CAF75]/43"
+                  } rounded-2xl pt-3 pb-1 px-4 min-h-16`}
+                >
+                  <div className="mb-1">
+                    <h3 className="text-sm font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+                      {account.accountName} ...1234
+                    </h3>
+                    <p className="text-lg font-bold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+                      USD {formatCurrency(account.balance)}
+                    </p>
+                  </div>
+                  <div className="flex flex-row items-center justify-start gap-x-2 mt-2 mb-2">
+                    <button
+                      className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#004687]/60 px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm"
+                      onClick={() => onShowTransactionTable(account._id)}
+                    >
+                      Transactions
+                    </button>
+                    <button className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#1E90FF] px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm">
+                      Maps
+                    </button>
+                    <button
+                      onClick={() =>
+                        downloadSingleAccountExcel(
+                          account.accountName,
+                          userTransactions || []
+                        )
+                      }
+                      className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FFD700] px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm"
+                    >
+                      Excel
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-row items-center justify-start gap-x-2 mt-2 mb-2">
-                  <button
-                    className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#004687]/60 px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm"
-                    onClick={() => onShowTransactionTable(account._id)}
-                  >
-                    Transactions
-                  </button>
-                  <button className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#1E90FF] px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm">
-                    Maps
-                  </button>
-                  <button
-                    onClick={() =>
-                      downloadSingleAccountExcel(account.accountName, userTransactions || [])
-                    }
-                    className="w-auto cursor-pointer font-semibold bg-[#D9D9D9] hover:bg-[#FFD700] px-3 py-0.5 rounded-2xl transition-colors duration-200 flex items-center justify-center font-['IBM_Plex_Sans'] text-sm"
-                  >
-                    Excel
-                  </button>
-                </div>
-                
-              </div>
-            </>
-          ))
-        ) : (
-          <p className="font-medium text-[#3F3131] mb-5 font-(family-name:--font-IBMPlexSans)">
-            No accounts found
-          </p>
-        )}
-      </div>
-      <div className="flex items-center justify-between mb-2">
-        <h2 className="text-xl font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-          Recent History
-        </h2>
-        <button
-          onClick={() => downloadAllExcel(userTransactions || [], userBankAccounts || [])}
-          className="cursor-pointer bg-[#D9D9D9] hover:bg-[#FFD700] text-black font-semibold px-4 py-1 rounded-2xl text-sm transition"
-        >
-          Download Excel
-        </button>
-      </div>
-
-      <div className="relative rounded-lg overflow-x-auto">
-        <table className="w-full bg-white shadow-lg">
-          <thead className="sticky top-0 z-10 bg-[#EED2D2] text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
-            <tr>
-              <th className="py-3 px-4 text-left font-semibold">Date</th>
-              <th className="py-3 px-4 text-left font-semibold">Account</th>
-              <th className="py-3 px-4 text-left font-semibold">Name</th>
-              <th className="py-3 px-4 text-left font-semibold">Category</th>
-              <th className="py-3 px-4 text-left font-semibold">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userTransactions ? (
-              userTransactions
-                .sort(
-                  (a, b) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime()
-                )
-                .slice(0, 5)
-                .map((transactions) => (
-                  <tr className="border-b border-[#F4D5D5] last:border-b-0 transition-colors bg-white" key={transactions._id}>
-                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{new Date(transactions.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" })}</td>
-                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.accountName}</td>
-                    <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.transactionName}</td>
-                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{transactions.category}</td>
-                    <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{formatCurrency(transactions.amount)}</td>
-                  </tr>
-                ))
+              ))
             ) : (
-              <tr><td colSpan={5} className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)">No transactions found</td></tr>
+              <p className="font-medium text-[#3F3131] mb-5 font-(family-name:--font-IBMPlexSans)">
+                No accounts found
+              </p>
             )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-semibold text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+              Recent History
+            </h2>
+            <button
+              onClick={() =>
+                downloadAllExcel(
+                  userTransactions || [],
+                  userBankAccounts || []
+                )
+              }
+              className="cursor-pointer bg-[#D9D9D9] hover:bg-[#FFD700] text-black font-semibold px-4 py-1 rounded-2xl text-sm transition"
+            >
+              Download Excel
+            </button>
+          </div>
+
+          <div className="relative rounded-lg overflow-x-auto">
+            <table className="w-full bg-white shadow-lg">
+              <thead className="sticky top-0 z-10 bg-[#EED2D2] text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+                <tr>
+                  <th className="py-3 px-4 text-left font-semibold">Date</th>
+                  <th className="py-3 px-4 text-left font-semibold">Account</th>
+                  <th className="py-3 px-4 text-left font-semibold">Name</th>
+                  <th className="py-3 px-4 text-left font-semibold">Category</th>
+                  <th className="py-3 px-4 text-left font-semibold">Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {userTransactions ? (
+                  userTransactions
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    )
+                    .slice(0, 5)
+                    .map((transactions) => (
+                      <tr
+                        className="border-b border-[#F4D5D5] last:border-b-0 transition-colors bg-white"
+                        key={transactions._id}
+                      >
+                        <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">
+                          {new Date(transactions.createdAt).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })}
+                        </td>
+                        <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.accountName}</td>
+                        <td className="py-3 px-4 font-medium text-[#3F3131] font-(family-name:--font-IBMPlexSans)">{transactions.transactionName}</td>
+                        <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{transactions.category}</td>
+                        <td className="py-3 px-4 font-medium text-[#5C543C] font-(family-name:--font-IBMPlexSans)">{formatCurrency(transactions.amount)}</td>
+                      </tr>
+                    ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={5}
+                      className="py-3 px-4 text-center text-[#3F3131] font-(family-name:--font-IBMPlexSans)"
+                    >
+                      No transactions found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
     </div>
   );
 }

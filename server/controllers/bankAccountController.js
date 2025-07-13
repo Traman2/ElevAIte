@@ -1,6 +1,7 @@
 import Account from "../models/bankAccountModel.js";
 import User from "../models/userModel.js";
 import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
+import Transaction from "../models/transactionModel.js";
 
 // Create a new account
 const createAccount = async (req, res) => {
@@ -26,8 +27,20 @@ const createAccount = async (req, res) => {
     }
 
     const savedAccount = await newAccount.save();
+    // Create initial balance transaction if balance > 0
+    if (balance > 0) {
+      const initialTransaction = new Transaction({
+        userId: userId,
+        accountNumber: savedAccount._id, // This is the ObjectId reference to Account
+        accountName: savedAccount.accountName,
+        transactionName: "Bank Account initial balance",
+        category: "Deposit",
+        amount: balance,
+      });
+      await initialTransaction.save();
+    }
 
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.status(201).send(savedAccount);
   } catch (error) {
     res.status(500).json({ message: "Error creating account", error });

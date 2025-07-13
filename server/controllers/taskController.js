@@ -10,7 +10,7 @@ const createTask = async (req, res) => {
     if (!classObj) return res.status(404).json({ message: 'Class not found' });
     const newTask = new TaskModel({ name, isComplete, dueDate, classId });
     await newTask.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.status(201).json(newTask);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -34,7 +34,7 @@ const updateTask = async (req, res) => {
     const { id } = req.params;
     const {updates, userId} = req.body;
     const updated = await TaskModel.findByIdAndUpdate(id, updates, { new: true });
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -47,7 +47,7 @@ const deleteTask = async (req, res) => {
     const { id } = req.params;
     await TaskModel.findByIdAndDelete(id);
     const {userId} = req.body;
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, true);
     res.json({ message: 'Task deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });

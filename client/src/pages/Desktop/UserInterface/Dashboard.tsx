@@ -280,28 +280,38 @@ export default function Dashboard({ userData }: Props) {
             Assignments Breakdown
           </h2>
 
-          <ChartContainer config={assignmentsChartConfig} className="min-h-[200px] p-2 w-full">
-            <BarChart accessibilityLayer data={assignmentsChartData}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="className"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => value.length > 10 ? value.slice(0, 10) + '…' : value}
-              />
-              <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
-              <Bar dataKey="pending" fill="var(--color-pending)" radius={4} />
-              <ChartLegend
-                content={ChartLegendRenderer}
-                layout="horizontal"
-                align="center"
-                verticalAlign="bottom"
-                iconType="square"
-              />
-            </BarChart>
-          </ChartContainer>
+          {(userTasks.length === 0 || assignmentsChartData.length === 0) ? (
+            <div className="flex flex-1 h-full items-center justify-center min-h-[200px]">
+              <div className="border-dashed border-[#654545] py-6 px-8 rounded-4xl border-3">
+                <p className="text-[#654545] text-lg font-bold font-(family-name:--font-IBMPlexSans)">
+                  No Tasks to Display Graph
+                </p>
+              </div>
+            </div>
+          ) : (
+            <ChartContainer config={assignmentsChartConfig} className="min-h-[200px] p-2 w-full">
+              <BarChart accessibilityLayer data={assignmentsChartData}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="className"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                  tickFormatter={(value) => value.length > 10 ? value.slice(0, 10) + '…' : value}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="completed" fill="var(--color-completed)" radius={4} />
+                <Bar dataKey="pending" fill="var(--color-pending)" radius={4} />
+                <ChartLegend
+                  content={ChartLegendRenderer}
+                  layout="horizontal"
+                  align="center"
+                  verticalAlign="bottom"
+                  iconType="square"
+                />
+              </BarChart>
+            </ChartContainer>
+          )}
         </div>
         <div className="bg-white rounded-lg shadow-sm px-3 pt-2 pb-1 flex flex-col min-h-0 overflow-hidden">
           <div className="flex items-center justify-between mb-2">

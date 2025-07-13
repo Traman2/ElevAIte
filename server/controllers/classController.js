@@ -1,7 +1,7 @@
 import ClassModel from '../models/classModel.js';
 import User from '../models/userModel.js';
 import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
-
+import TaskModel from '../models/taskModel.js';
 // Create a new class
 const createClass = async (req, res) => {
   try {
@@ -10,7 +10,7 @@ const createClass = async (req, res) => {
     if (!user) return res.status(404).json({ message: 'User not found' });
     const newClass = new ClassModel({ className, userId });
     await newClass.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.status(201).json(newClass);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -34,7 +34,7 @@ const updateClass = async (req, res) => {
     const { id } = req.params;
     const {updates, userId} = req.body;
     const updated = await ClassModel.findByIdAndUpdate(id, updates, { new: true });
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -46,9 +46,11 @@ const deleteClass = async (req, res) => {
   try {
     const { id } = req.params;
     const { userId } = req.body;
+    await TaskModel.deleteMany({ classId: id });
     await ClassModel.findByIdAndDelete(id);
-    embedUserStateToPineconeLocal(userId);
-    res.json({ message: 'Class deleted' });
+    
+    embedUserStateToPineconeLocal(userId, true);
+    res.json({ message: 'Class and associated tasks deleted' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

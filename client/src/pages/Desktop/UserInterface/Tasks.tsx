@@ -47,7 +47,7 @@ export default function Tasks({
   const [editingClassId, setEditingClassId] = useState<string | null>(null);
   const [editingClassName, setEditingClassName] = useState<string>("");
 
-  useEffect(() => {
+  const refreshTasksAndClasses = async () => {
     if (!userData) return;
 
     axios
@@ -71,6 +71,10 @@ export default function Tasks({
       .catch((err) => {
         console.error("Error fetching user classes:", err);
       });
+  };
+
+  useEffect(() => {
+    refreshTasksAndClasses();
   }, [userData, refreshKey]);
 
   useEffect(() => {
@@ -95,16 +99,7 @@ export default function Tasks({
       })
       .then(async () => {
         if (userData) {
-          const classRes = await axios.get(
-            `http://localhost:3000/class/user/${userData._id}`
-          );
-          setUserClasses(classRes.data);
-          const taskPromises = classRes.data.map((classItem: ClassData) =>
-            axios.get(`http://localhost:3000/task/class/${classItem._id}`)
-          );
-          const taskResponses = await Promise.all(taskPromises);
-          const allTasks = taskResponses.flatMap((res) => res.data);
-          setUserTasks(allTasks);
+          await refreshTasksAndClasses();
         }
       })
       .catch((err) => {
@@ -129,10 +124,7 @@ export default function Tasks({
         setEditingClassId(null);
         setEditingClassName("");
         if (userData) {
-          const classRes = await axios.get(
-            `http://localhost:3000/class/user/${userData._id}`
-          );
-          setUserClasses(classRes.data);
+          await refreshTasksAndClasses();
         }
       })
       .catch((err) => {
@@ -149,16 +141,7 @@ export default function Tasks({
       })
       .then(async () => {
         if (userData) {
-          const classRes = await axios.get(
-            `http://localhost:3000/class/user/${userData._id}`
-          );
-          setUserClasses(classRes.data);
-          const taskPromises = classRes.data.map((classItem: ClassData) =>
-            axios.get(`http://localhost:3000/task/class/${classItem._id}`)
-          );
-          const taskResponses = await Promise.all(taskPromises);
-          const allTasks = taskResponses.flatMap((res) => res.data);
-          setUserTasks(allTasks);
+          await refreshTasksAndClasses();
         }
       })
       .catch((err) => {

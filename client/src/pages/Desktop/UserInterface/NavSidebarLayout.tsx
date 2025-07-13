@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 //Tabs
 import Dashboard from "./Dashboard";
@@ -23,7 +24,9 @@ import InternshipManagerModal from "../../../components/DesktopModals/Internship
 import InternshipAddModal from "../../../components/DesktopModals/InternshipAddModal";
 import TaskModal from "../../../components/DesktopModals/TaskModal";
 import AddNewTaskModal from "../../../components/DesktopModals/AddNewTaskModal";
-import AIAssistant from "./AIAssistant";
+
+//AI Assistant pop up hover card
+import AIAssistantChatCard from "../../../components/AIHoverChatCard/AIAssistantChatCard";
 
 interface Props {
   page: string;
@@ -65,9 +68,7 @@ export default function NavSidebarLayout({ page }: Props) {
   const [transactionAccountNumber, setTransactionAccountNumber] = useState<
     string | null
   >(null);
-  const [classIdForTask, setClassId] = useState<
-    string | null
-  >(null);
+  const [classIdForTask, setClassId] = useState<string | null>(null);
   const [viewApplication, setViewApplication] =
     useState<ApplicationData | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -76,6 +77,38 @@ export default function NavSidebarLayout({ page }: Props) {
   const [taskRefreshKey, setTaskRefreshKey] = useState(0);
   const [accountRefreshKey, setAccountRefreshKey] = useState(0);
   const [showAssets, setShowAssets] = useState(false);
+
+  //ai Hover card code
+  const [showAICard, setShowAICard] = useState(false);
+  const [aiButtonPosition, setAiButtonPosition] = useState<
+    { x: number; y: number; width: number; height: number } | undefined
+  >(undefined);
+  const aiButtonRef = useRef<HTMLButtonElement>(null);
+
+  //Socket io client handlers
+  useEffect(() => {
+    if (!userData) return;
+
+    const socket = io("http://localhost:3000");
+
+    socket.emit("register", userData._id);
+
+    socket.on("refresh-component", ({ type }) => {
+      if (type === "updateClass") {
+        console.log("Received task update event. Refreshing...");
+        setTaskRefreshKey((k) => k + 1);
+      }
+
+      if (type === "updateAccount") {
+        console.log("Received task update event. Refreshing...");
+        setAccountRefreshKey((k) => k + 1)
+      }
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [userData]);
 
   useEffect(() => {
     setActivePage(page);
@@ -146,7 +179,6 @@ export default function NavSidebarLayout({ page }: Props) {
     });
   };
 
-
   const handleShowTransactionTable = (accountNumber: string) => {
     setTransactionAccountNumber(accountNumber);
     setModalState({
@@ -165,6 +197,24 @@ export default function NavSidebarLayout({ page }: Props) {
     setTransactionAccountNumber(null);
     setViewApplication(null);
     setClassId(null);
+  };
+
+  //ai card handler logic
+  const handleAICardToggle = () => {
+    if (!showAICard && aiButtonRef.current) {
+      const rect = aiButtonRef.current.getBoundingClientRect();
+      const position = {
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+      };
+      setAiButtonPosition(position);
+      setShowAICard(true);
+    } else {
+      setShowAICard(false);
+      setAiButtonPosition(undefined);
+    }
   };
 
   //Decrypt user data from jwt
@@ -203,7 +253,7 @@ export default function NavSidebarLayout({ page }: Props) {
               0
             ) || 0;
         setTotalAssets(total);
-        setAccountRefreshKey((k) => k + 1)
+        setAccountRefreshKey((k) => k + 1);
       })
       .catch((err) => {
         setTotalAssets(0);
@@ -257,9 +307,7 @@ export default function NavSidebarLayout({ page }: Props) {
           />
         );
       case "Calendar":
-        return <Calendar />;
-      case "AIAssistant":
-        return <AIAssistant userData={userData} />
+        return <Calendar refreshKey={taskRefreshKey} userId={userData?._id} />;
       case "Security":
         return <Security />;
       case "Settings":
@@ -290,7 +338,7 @@ export default function NavSidebarLayout({ page }: Props) {
           />
         );
       case "search":
-        return <SearchModal onClose={handleCloseModal}/>;
+        return <SearchModal onClose={handleCloseModal} />;
       case "transactionTable":
         return transactionAccountNumber ? (
           <TransactionTableModal
@@ -325,13 +373,13 @@ export default function NavSidebarLayout({ page }: Props) {
         );
       case "addNewTask":
         return (
-          <AddNewTaskModal 
-            onClose={handleCloseModal} 
-            classId={classIdForTask? classIdForTask : ""}
+          <AddNewTaskModal
+            onClose={handleCloseModal}
+            classId={classIdForTask ? classIdForTask : ""}
             onTaskAdded={() => setTaskRefreshKey((k) => k + 1)}
             userId={userData?._id}
           />
-        )
+        );
       default:
         return null;
     }
@@ -351,9 +399,9 @@ export default function NavSidebarLayout({ page }: Props) {
   return (
     <div className="h-screen w-full bg-[#EED2D2] flex flex-col overflow-hidden">
       {/* Header Nav Bar */}
-      <header className="bg-[#F9F1F1] mx-2 mt-2 px-3 py-2 rounded-t-lg shadow-sm">
+      <header className="bg-[#F9F1F1] mx-2 mt-2 px-3 py-2 rounded-t-lg shadow-sm relative">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 relative">
             <div className="w-60 flex items-center space-x-2">
               <img
                 src="/icons/noto--money-bag.svg"
@@ -370,18 +418,35 @@ export default function NavSidebarLayout({ page }: Props) {
             >
               Good Morning, {userData?.firstName}
             </span>
-            {/* AI Assistant Button */}
-            <button
-              aria-label={userData?.firstName || "AI Assistant"}
-              className="cursor-pointer ml-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EAE3E3] hover:bg-[#d1c7c7] shadow transition-colors duration-200 border border-[#D4C4C4]"
-              type="button"
-            >
-              <img
-                src="/icons/sidebar/material-symbols-light--robot.svg"
-                alt="AI Assistant"
-                className="w-4 h-4"
-              />
-            </button>
+
+            <div className="relative">
+              <button
+                ref={aiButtonRef}
+                aria-label={
+                  showAICard ? "Close AI Assistant" : "Open AI Assistant"
+                }
+                className="cursor-pointer ml-3 w-7 h-7 flex items-center justify-center rounded-full bg-[#EAE3E3] hover:bg-[#d1c7c7] shadow transition-colors duration-200 border border-[#D4C4C4]"
+                type="button"
+                onClick={handleAICardToggle}
+              >
+                {showAICard ? (
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+                  </svg>
+                ) : (
+                  <img
+                    src="/icons/sidebar/material-symbols-light--robot.svg"
+                    alt="AI Assistant"
+                    className="w-4 h-4"
+                  />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center space-x-3 pr-1">
@@ -411,12 +476,18 @@ export default function NavSidebarLayout({ page }: Props) {
         </div>
       </header>
 
+      {/* AI Assistant Chat Card render */}
+      {showAICard && aiButtonPosition && (
+        <AIAssistantChatCard
+          buttonPosition={aiButtonPosition}
+          userData={userData}
+        />
+      )}
+
       {/* Sidebar */}
       <div className="flex mx-2 mt-1 mb-2 gap-1 flex-1 min-h-0">
         <div className="bg-[#F9F1F1] w-60 px-3 py-2 rounded-bl-lg shadow-sm flex flex-col">
-          <div
-            className="shadow-sm bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3"
-          >
+          <div className="shadow-sm bg-[#759EDC]/43 bg-opacity-74 rounded-lg px-3 pt-2 pb-3">
             <p className="text-[#3F3131] text-xs font-medium font-(family-name:--font-IBMPlexSans)">
               Total Assets
             </p>
@@ -427,7 +498,10 @@ export default function NavSidebarLayout({ page }: Props) {
               <button
                 type="button"
                 className="focus:outline-none cursor-pointer"
-                onClick={e => { e.stopPropagation(); setShowAssets((v) => !v); }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowAssets((v) => !v);
+                }}
                 aria-label={showAssets ? "Hide assets" : "Show assets"}
               >
                 <img

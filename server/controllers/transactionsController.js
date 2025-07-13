@@ -57,7 +57,7 @@ const createTransaction = async (req, res) => {
     });
 
     const savedTransact = await newTransact.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
 
     res.status(201).send(savedTransact);
   } catch (error) {

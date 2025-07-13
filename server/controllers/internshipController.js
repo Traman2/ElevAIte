@@ -12,7 +12,7 @@ const createInternship = async (req, res) => {
     }
     const internship = new Internship({ date, name, category, employer, status, description, userId });
     await internship.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
     res.status(201).json(internship);
   } catch (err) {
     res.status(400).json({ error: err.message });
@@ -40,7 +40,7 @@ const deleteInternship = async (req, res) => {
     const { id } = req.params;
     const {userId} = req.body;
     await Internship.findByIdAndDelete(id);
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, true);
 
     res.json({ message: 'Internship deleted' });
   } catch (err) {
@@ -57,7 +57,7 @@ const updateInternship = async (req, res) => {
     if (!internship) {
       return res.status(404).json({ message: 'Internship not found' });
     }
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
 
     res.json(internship);
   } catch (err) {

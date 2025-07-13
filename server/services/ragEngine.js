@@ -11,6 +11,9 @@ import TaskModel from "../models/taskModel.js";
 import Transaction from "../models/transactionModel.js";
 import Account from "../models/bankAccountModel.js";
 
+//Socket Helper function
+import notifyUser from "../server.js";
+
 import { embedUserStateToPineconeLocal } from "../controllers/ragAIController.js";
 
 const genAI = new GoogleGenAI(process.env.GOOGLE_API_KEY);
@@ -35,9 +38,9 @@ export const ragQueryHandler = async (query, userId) => {
         
         --- INTENT OPTIONS ---
         Only choose one of the following:
-        - "retriveData": The user is asking to view or summarize information (e.g., tasks, internships, balances, summaries).
+        - "retriveData": The user is asking to view or summarize information (e.g., tasks, internships, balances, summaries). If user asks greeting or asks a question about instructions, then also use this. Also include main_summary in categories when using this intent
         - "createClass": The user is asking to create a new class
-        - "createTaskFromClass": The user is asking to create a task for a class
+        - "createTaskFromClass": The user is asking to create a task for a class, make sure to add class_summary in categories format always when using this
         - "createAccount": The user is asking to create a bank account
         - "createTransaction": The user is asking to add a transaction to an account
         - "createInternship": The user is asking to create a new internship to add to internship manager
@@ -53,7 +56,7 @@ export const ragQueryHandler = async (query, userId) => {
         - "transaction"
         - "bank_account"
         
-        If the user asks for "task summary", "assignment summary" or "tasks for a specific class", always include "class_summary" in the categories.
+        If the user asks for "task summary", "assignment summary", "create or add new task or assignment for class" or "tasks for a specific class", always include "class_summary" in the categories.
         
         --- OUTPUT FORMAT ---
         Return a valid JSON object with the following **three properties only**:
@@ -123,6 +126,8 @@ export const ragQueryHandler = async (query, userId) => {
   return response;
 };
 
+
+//Retrive Data Handler
 const viewClassSummary = async (chunks, query) => {
   const context = chunks
     .map((chunk, index) => {
@@ -131,6 +136,8 @@ const viewClassSummary = async (chunks, query) => {
       }\nContent: ${chunk.fields.chunk_text}`;
     })
     .join("\n\n");
+
+  const today = new Date();
 
   const airesponse = await genAI.models.generateContent({
     model: "gemini-2.5-flash",
@@ -147,6 +154,7 @@ const viewClassSummary = async (chunks, query) => {
         - If multiple records are relevant (e.g., multiple tasks or accounts), list them clearly in sections.
         - If certain information is not found in the context, gracefully say so.
         - Do not render the ID of anything, that is not user friendly
+        - If user asks a question or greeting, then provide anwswer with your instructions or friendly respond back to greeting
 
         --- FORMAT ---
         - Respond in **valid Markdown (.md)** format.
@@ -164,7 +172,10 @@ const viewClassSummary = async (chunks, query) => {
         --- CONTEXT DATA ---
         ${context}
 
-        Now, using the context above, answer the following user query given
+        --- Todays Date ---
+        ${today}
+
+        Now, using the context above and todays date for reference, answer the following user query given
 `,
     },
   });
@@ -174,6 +185,8 @@ const viewClassSummary = async (chunks, query) => {
   return { message: airesponse.text, format: "viewClassSummary" };
 };
 
+
+//Create items agents
 const createClass = async (query, userId) => {
 
   //Gemini LLM Call
@@ -209,14 +222,15 @@ const createClass = async (query, userId) => {
     });
     
     await newClass.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
+    notifyUser(userId, "updateClass");
     console.log(`New class created: ${result.className} for user ${userId}`);
     
     return { message: result.aiMessage, format: "createClass" };
   } catch (error) {
     console.error("Error creating class:", error);
     return { 
-      message: "Sorry, I encountered an error while creating the class. Please try again.", 
+      message: "Sorry but I was unable to make the class. Please check the class name or report this bug to dev team", 
       format: "createClass" 
     };
   }
@@ -259,8 +273,22 @@ const createAccount = async (query, userId) => {
       userId: userId
     });
     
-    await newAccount.save();
-    embedUserStateToPineconeLocal(userId);
+    const savedAccount = await newAccount.save();
+
+    if (savedAccount.balance > 0) {
+      const initialTransaction = new Transaction({
+        userId: userId,
+        accountNumber: savedAccount._id, // This is the ObjectId reference to Account
+        accountName: savedAccount.accountName,
+        transactionName: "Bank Account initial balance",
+        category: savedAccount.accountType === "Credit" ? "Withdraw" : "Deposit",
+        amount: savedAccount.balance,
+      });
+      await initialTransaction.save();
+    }
+
+    embedUserStateToPineconeLocal(userId, false);
+    notifyUser(userId, "updateAccount");
     console.log(`New account created: ${result.accountName} for user ${userId}`);
     
     return { message: result.aiMessage, format: "createAccount" };
@@ -290,7 +318,7 @@ const createTaskFromClass = async (query, userId, chunks) => {
     contents: query,
     config: {
       systemInstruction: `
-        You are an intelligent AI assistant that helps students create tasks for their academic classes.
+        You are an intelligent AI assistant that helps students create tasks for their academic classes. If you are unable to find the appropriate class leave it as null
         Your role is to analyze the user's query and generate a structured JSON object only containing the following information:
         taskName: A clear name for the task based on the query.
         isCompleted: A boolean value indicating task completion. If the user does not mention status, default this to false.
@@ -321,14 +349,15 @@ const createTaskFromClass = async (query, userId, chunks) => {
     });
     
     await newTask.save();
-    embedUserStateToPineconeLocal(userId);
+    embedUserStateToPineconeLocal(userId, false);
+    notifyUser(userId, "updateClass");
     console.log(`New task created: ${result.taskName} for class ${result.classId}`);
     
     return { message: result.aiMessage, format: "createTaskFromClass" };
   } catch (error) {
     console.error("Error creating task:", error);
     return { 
-      message: "Sorry, I encountered an error while creating the task. Please try again.", 
+      message: "Sorry but I was unable to create the task. Please check that you asked to make the task for a valid class and try again", 
       format: "createTaskFromClass" 
     };
   }
@@ -348,6 +377,13 @@ const createInternship = () => {
   return { message: message, format: "createInternship" };
 };
 
+//Delete items agent
+
+
+//Patch items agent
+
+
+//Fallback message
 const notRelatedToActivityManagement = () => {
   const message = "That feature is currently not supported. Please try again later or reword your message";
   console.log(message);

@@ -2,10 +2,16 @@ import { pinecone } from "../services/pinecone.js";
 import { generateUserDataDocument } from "./ragDocumentGenerator.js";
 import { ragQueryHandler } from "../services/ragEngine.js";
 
-const embedUserStateToPineconeLocal = async (userId) => {
+const embedUserStateToPineconeLocal = async (userId, isDelete) => {
   try {
     const indexName = "vectordb";
     const namespace = userId.toString();
+
+    if (isDelete) {
+      console.log("Clearing vector db namespace:", namespace);
+      await pinecone.index(indexName).namespace(namespace).deleteAll();
+    }
+
     const data = await generateUserDataDocument(userId);
     const index = pinecone.index(indexName).namespace(namespace);
 
@@ -118,31 +124,64 @@ const embedUserStateToPineconeLocal = async (userId) => {
       })
       .join("\n");
 
-    const records = [
-      createRecord(
-        `internship-summary-${userId}`,
-        internshipSummaryText,
-        "internship_summary",
-        "internship_summary"
-      ),
-      ...bankAccountChunks,
-      ...transactionChunks,
-      createRecord(
-        `classes-${userId}`,
-        classesText,
-        "class_summary",
-        "classes_summary"
-      ),
-      ...taskChunks,
-      ...internshipChunks,
+    // Build records array conditionally based on data presence
+    const records = [];
+
+    // Add internship summary if there are internships
+    if (data.internships && data.internships.length > 0) {
+      records.push(
+        createRecord(
+          `internship-summary-${userId}`,
+          internshipSummaryText,
+          "internship_summary",
+          "internship_summary"
+        )
+      );
+    }
+
+    // Add bank account chunks if present
+    if (bankAccountChunks.length > 0) {
+      records.push(...bankAccountChunks);
+    }
+
+    // Add transaction chunks if present
+    if (transactionChunks.length > 0) {
+      records.push(...transactionChunks);
+    }
+
+    // Add class summary if there are classes
+    if (data.classes && data.classes.length > 0) {
+      records.push(
+        createRecord(
+          `classes-${userId}`,
+          classesText,
+          "class_summary",
+          "classes_summary"
+        )
+      );
+    }
+
+    // Add task chunks if present
+    if (taskChunks.length > 0) {
+      records.push(...taskChunks);
+    }
+
+    // Add internship chunks if present
+    if (internshipChunks.length > 0) {
+      records.push(...internshipChunks);
+    }
+
+    // Always add main summary
+    records.push(
       createRecord(
         `summary-${userId}`,
         summaryText,
         "main_summary",
         "main_summary"
-      ),
-    ];
+      )
+    );
 
+    console.log("adding records ...")
     await index.upsertRecords(records, { namespace });
 
     return ({
@@ -150,9 +189,9 @@ const embedUserStateToPineconeLocal = async (userId) => {
     })
 
   } catch (error) {
-
+    console.error("problem occured", error);
     return ({
-      message: `Error embedding data for user ${req.params.userId}: ${error.message}`
+      message: `Error embedding data for user ${userId}: ${error.message}`
     })
   }
 };
