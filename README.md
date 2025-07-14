@@ -2,10 +2,10 @@
  <img src="spongebob-stress-image.gif" style="width: 500px; height: auto;">
 </p>
 
-<h1 align="center">🤑 Schedgy</h1>
+<h1 align="center">🤑 ElevAIte</h1>
 
 <p align="center">
-Schedgy is a Budget/Time Management/Personal Planner for students to keep track of their finances and academic activities all in one web app. Instead of having to rely on different apps such as Google Calendar, Notion, Mint (Budget Planner made by Intuit) and the other platforms out there, students can just make one account with Schedgy and start doing all those things right off the main menu. The web app also takes transaction data inputed from the user and creates a map using to Google Maps API to show where the most amount of money is being spent to help reduce spendetures and increase savings.
+ElevAIte is a Budget/Time Management/Personal Planner for students to keep track of their finances and academic activities all in one web app. Instead of having to rely on different apps such as Google Calendar, Notion, Mint (Budget Planner made by Intuit) and the other platforms out there, students can just make one account with Schedgy and start doing all those things right off the main menu. The web app also takes transaction data inputed from the user and creates a map using to Google Maps API to show where the most amount of money is being spent to help reduce spendetures and increase savings.
 </p>
 
 ## Tech Stack ⚙️
@@ -27,7 +27,7 @@ Schedgy is a Budget/Time Management/Personal Planner for students to keep track 
 - **Express**: Framework for building the RESTful API that powers the backend logic and handles HTTP requests.
 - **Node**: JavaScript runtime environment used to run the backend server and manage dependencies.
 - **MongoDB**: NoSQL database used to store user data, transactions, and other persistent information.
-- **Nodemailer**: Library for sending emails from the backend, such as account verification or notifications.
+- **Pinecone**: Vector Database to store user data chunks in vectors for faster lookup using cosine simalarity search to power RAG AI Model
 
 </details>
 
@@ -35,7 +35,7 @@ Schedgy is a Budget/Time Management/Personal Planner for students to keep track 
   
 **<summary>APIs</summary>**
 
-- **Google Maps API**: Integrated to visualize transaction locations on a map, helping users identify where they spend the most money.
+- **Google Gemini API**: Allow for processing of user natural response queries into commands ElevAIte can recognize and handle in backend.
 
 </details>
 
@@ -45,7 +45,7 @@ Follow these steps to set up the project locally:
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Traman2/Schedgy.git
+   git clone https://github.com/Traman2/ElevAIte.git
    cd BudgLeaf
    ```
 2. **Install dependencies for the client and server:**
@@ -77,9 +77,9 @@ Follow these steps to set up the project locally:
 - **Email Reminders**: Automated email notifications to remind users about upcoming tasks, deadlines, and important events.
 - **Native Browser Notification Support**: Real-time browser notifications to keep users updated on tasks, transactions, and reminders without needing to check their email.
 
-## What seperates Schedgy from the Competition 🏆
+## What seperates ElevAIte from the Competition 🏆
 
-Schedgy stands out from other productivity and budgeting apps by combining multiple essential tools into a single, unified platform designed specifically for students. Unlike other solutions that require juggling between different apps for budgeting, planning, and tracking academic activities, Schedgy offers:
+ElevAIte stands out from other productivity and budgeting apps by combining multiple essential tools into a single, unified platform designed specifically for students. Unlike other solutions that require juggling between different apps for budgeting, planning, and tracking academic activities, ElevAIte offers:
 
 - **All in One Dashboard**: Manage finances, academic schedules, and personal tasks from a single interface.
 - **Spending Insights with Maps**: Visualize where your money goes using Google Maps integration, helping you identify spending patterns and save more effectively.
