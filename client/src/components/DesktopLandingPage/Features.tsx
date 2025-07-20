@@ -10,7 +10,7 @@ export default function Features() {
               </span>
             </div>
             <h2 className="text-5xl font-bold font-(family-name:--font-IBMPlexSans) text-black text-center mb-16 max-w-[600px] mx-auto">
-              Schedgy has Everything You Need in One Place
+              ElevAIte has Everything You Need in One Place
             </h2>
             <div className="bg-[#f1ede2] rounded-3xl p-10 shadow-md">
               <div className="flex items-center justify-between gap-8 mb-14">
@@ -21,7 +21,7 @@ export default function Features() {
                   <p className="text-base font-medium font-(family-name:--font-IBMPlexSans) text-[#6B6B6B]">
                     Juggling Notion, Excel, Mint, Google Calendar, and countless
                     other tools to manage your academic life? Simplify your
-                    journey with Schedgy—your all-in-one platform for seamless
+                    journey with ElevAIte's all-in-one platform for seamless
                     organization, smarter budgeting, and stress-free student
                     living.
                   </p>

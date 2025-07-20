@@ -12,7 +12,7 @@ export default function Footer() {
               />
               <div>
                 <span className="text-xl font-bold text-white font-(family-name:--font-IBMPlexMono)">
-                  Schedgy
+                  ElevAIte
                 </span>
                 <p className="mt-1 text-sm font-(family-name:--font-IBMPlexSans) text-gray-300">
                   All in one platform to manage your finances and schedule
@@ -71,7 +71,7 @@ export default function Footer() {
           </div>
           <div className="mt-12 border-t border-gray-300 pt-8 text-center">
             <p className="text-sm text-gray-300">
-              &copy; 2025 Schedgy. All rights reserved.
+              &copy; 2025 ElevAIte. All rights reserved.
             </p>
             <p className="text-sm text-gray-300">
               Built with React and Express

@@ -9,23 +9,23 @@ export default function FAQs() {
 
   const FAQS = [
     {
-      question: "What is Schedgy?",
+      question: "What is ElevAIte?",
       answer:
-        "Schedgy is an all-in-one platform to organize your schedule and budget, designed for students and young professionals.",
+        "ElevAIte is an all-in-one platform to organize your schedule and budget, designed for students and young professionals.",
     },
     {
       question: "Is my financial data secure?",
       answer: "No...",
     },
     {
-      question: "Can I use Schedgy for free?",
+      question: "Can I use ElevAIte for free?",
       answer:
-        "Schedgy is free for all college students although its recommended not to use the deployed version for personal use",
+        "ElevAIte is free for all college students although its recommended not to use the deployed version for personal use",
     },
     {
-      question: "Why did I make Schedgy?",
+      question: "Why did I make ElevAIte?",
       answer:
-        "I created Schedgy because I needed a way to keep track of assignments more efficiently and with less clutter than Google Calendar. I also wanted a simple way to manage the income from my on-campus job. So, I built Schedget to help me manage my time and money wisely while also learning a bit of web development along the way",
+        "I created ElevAIte because I needed a way to keep track of assignments more efficiently and with less clutter than Google Calendar. I also wanted a simple way to manage the income from my on-campus job. So, I built ElevAIte to help me manage my time and money wisely while also learning a bit of web development along the way",
     },
     {
       question: "Who can I contact for support?",

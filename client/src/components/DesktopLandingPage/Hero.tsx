@@ -26,7 +26,7 @@ export default function Hero({handleClick} : Props) {
             className="mt-6 font-bold text-center text-xl font-(family-name:--font-IBMPlexSans) max-w-[500px] mx-auto"
             style={{ color: "#5C543C" }}
           >
-            From assignments to payroll dates, Schedgy keeps your academic and
+            From assignments to payroll dates, ElevAIte keeps your academic and
             financial life in sync
           </p>
           <div className="flex flex-row gap-12 mt-8 justify-center">
